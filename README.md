@@ -15,5 +15,5 @@ How To Get Started
 * On the RPi, add the pi user to the docker user group: ```sudo usermod -aG docker pi```
 * Try out some docker commmand, e.g. ``docker ps```  
 * Build your webapp and Dockerfile (I followed [this tutorial](https://medium.com/swlh/how-to-run-spring-boot-application-on-raspberry-pi-using-docker-d633e15ffff2)) and transfer it to the RPi
-* docker container run -p 8080:8080 --restart unless-stopped bondor/dashboard
+* ```docker container run -p 8080:8080 --restart unless-stopped bondor/dashboard```
 * Set the URL for Chromium by creating the file ```/home/pi/chilipie_url.txt``` with url ```http://localhost:8080``` as its first and only line.
