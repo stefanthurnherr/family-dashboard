@@ -1,10 +1,13 @@
 package org.bondor.dashboard;
 
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import java.io.InputStream;
+import java.io.File;
 import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +27,9 @@ public class DashboardApplication {
   @Autowired
   BuildProperties buildProperties;
 
+  @Autowired
+  private ResourcePatternResolver resourcePatternResolver;
+
   @RequestMapping(value = "/", method = RequestMethod.GET)
   public String home() {
       return "Hello Docker World - built " + DateTimeFormatter.ISO_INSTANT.format(buildProperties.getTime());
@@ -31,27 +37,51 @@ public class DashboardApplication {
 
   @RequestMapping(value = "/images", method = RequestMethod.GET)
   public ResponseEntity<String> listImages() throws Exception {
-    final ClassPathResource imageFile = new ClassPathResource("static/");
-    System.out.println("Listing images in " + imageFile);
+    final ClassPathResource imagesDirectory = new ClassPathResource("static/");
+    if (!imagesDirectory.exists()) {
+      return ResponseEntity.notFound().build();
+    }
+
+    System.out.println("Listing images in " + imagesDirectory);
+    final StringBuilder sb = new StringBuilder();
+    //Resource[] resources = resourcePatternResolver.getResources("static/*.png");
+    final ClassLoader cl = this.getClass().getClassLoader();
+    final ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(cl);
+    final Resource[] resources = resolver.getResources("classpath*:/static/*.png") ;
+    for (Resource resource : resources) {
+      System.out.println("  Found image file: " + resource.getFilename());
+      sb.append(resource.getFilename()).append("\n");
+    }
+
     return ResponseEntity.ok()
             .contentType(MediaType.TEXT_PLAIN)
-            .body("Not implemented yet!");
+            .body(sb.toString());
   }
 
   @RequestMapping(value = "/images/{id:[0-9]+}", method = RequestMethod.GET)
   public ResponseEntity<byte[]> image(@PathVariable("id") long id) throws Exception {
     //FIXME prevent string code injection/validate it is numeric
-    final ClassPathResource imageFile = new ClassPathResource("static/" + id + ".jpg");
+    final ClassPathResource imageFile = new ClassPathResource("static/" + id + ".png");
     System.out.println("Serving up image " + id + " as " + imageFile);
 
     if (!imageFile.exists()) {
       return ResponseEntity.notFound().build();
     }
 
-    final byte[] imageBytes = StreamUtils.copyToByteArray(imageFile.getInputStream());
-    return ResponseEntity.ok()
-            .contentType(MediaType.IMAGE_JPEG)
+    InputStream inputStream = null;
+    try {
+      inputStream = imageFile.getInputStream();
+      final byte[] imageBytes = StreamUtils.copyToByteArray(inputStream);
+      return ResponseEntity.ok()
+            .contentType(MediaType.IMAGE_PNG)
             .body(imageBytes);
+    } finally {
+      if (inputStream != null) {
+        try {
+          inputStream.close();
+        } catch (Exception e) {}
+      }
+    }
   }
 
   public static void main(String[] args) {
