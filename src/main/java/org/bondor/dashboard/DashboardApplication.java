@@ -1,8 +1,9 @@
 package org.bondor.dashboard;
 
+import java.util.Random;
+import java.io.IOException;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import java.io.InputStream;
-import java.io.File;
 import java.time.format.DateTimeFormatter;
 
 import org.springframework.core.io.ClassPathResource;
@@ -27,8 +28,7 @@ public class DashboardApplication {
   @Autowired
   BuildProperties buildProperties;
 
-  @Autowired
-  private ResourcePatternResolver resourcePatternResolver;
+  private Random random = new Random();
 
   @RequestMapping(value = "/", method = RequestMethod.GET)
   public String home() {
@@ -37,17 +37,13 @@ public class DashboardApplication {
 
   @RequestMapping(value = "/images", method = RequestMethod.GET)
   public ResponseEntity<String> listImages() throws Exception {
-    final ClassPathResource imagesDirectory = new ClassPathResource("static/");
-    if (!imagesDirectory.exists()) {
+    System.out.println("Listing all available images...");
+    final Resource[] resources = allImageResources();
+    if (resources == null) {
       return ResponseEntity.notFound().build();
     }
-
-    System.out.println("Listing images in " + imagesDirectory);
+    System.out.println("Found " + resources.length + " available images:");
     final StringBuilder sb = new StringBuilder();
-    //Resource[] resources = resourcePatternResolver.getResources("static/*.png");
-    final ClassLoader cl = this.getClass().getClassLoader();
-    final ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(cl);
-    final Resource[] resources = resolver.getResources("classpath*:/static/*.png") ;
     for (Resource resource : resources) {
       System.out.println("  Found image file: " + resource.getFilename());
       sb.append(resource.getFilename()).append("\n");
@@ -58,19 +54,17 @@ public class DashboardApplication {
             .body(sb.toString());
   }
 
-  @RequestMapping(value = "/images/{id:[0-9]+}", method = RequestMethod.GET)
-  public ResponseEntity<byte[]> image(@PathVariable("id") long id) throws Exception {
-    //FIXME prevent string code injection/validate it is numeric
-    final ClassPathResource imageFile = new ClassPathResource("static/" + id + ".png");
-    System.out.println("Serving up image " + id + " as " + imageFile);
-
-    if (!imageFile.exists()) {
+  @RequestMapping(value = "/images/{id:[1-9a-z][0-9a-z]*}", method = RequestMethod.GET)
+  public ResponseEntity<byte[]> image(@PathVariable("id") String id) throws Exception {
+    final Resource imageResource = findImageResource(id, allImageResources());
+    if (imageResource == null) {
       return ResponseEntity.notFound().build();
     }
 
+    System.out.println("Serving image " + imageResource + " for index " + id);
     InputStream inputStream = null;
     try {
-      inputStream = imageFile.getInputStream();
+      inputStream = imageResource.getInputStream();
       final byte[] imageBytes = StreamUtils.copyToByteArray(inputStream);
       return ResponseEntity.ok()
             .contentType(MediaType.IMAGE_PNG)
@@ -82,6 +76,35 @@ public class DashboardApplication {
         } catch (Exception e) {}
       }
     }
+  }
+
+  private Resource findImageResource(final String id, final Resource[] resources) {
+    try {
+      final long idLong = Long.parseLong(id);
+      for (final Resource resource : resources){
+        System.out.println("  Checking whether " + resource.getFilename() + " matches...");
+        if (resource.getFilename().equals(Long.toString(idLong) + ".png")) {
+          return resource;
+        }
+      }
+    } catch (NumberFormatException e) {
+      if ("any".equals(id)) {
+        final int randomIndex = random.nextInt(resources.length);
+        return resources[randomIndex];
+      }
+    }
+    System.out.println("  No matching resource found for id=" + id);
+    return null;
+  }
+
+  private Resource[] allImageResources() throws IOException {
+    final ClassPathResource imagesDirectory = new ClassPathResource("static/");
+    if (!imagesDirectory.exists()) {
+      return null;
+    }
+    final ClassLoader cl = this.getClass().getClassLoader();
+    final ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(cl);
+    return resolver.getResources("classpath*:/static/*.png") ;
   }
 
   public static void main(String[] args) {
