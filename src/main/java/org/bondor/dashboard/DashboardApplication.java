@@ -1,5 +1,7 @@
 package org.bondor.dashboard;
 
+import java.time.LocalDateTime;
+import java.net.URI;
 import java.util.Random;
 import java.io.IOException;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -11,6 +13,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -33,6 +36,11 @@ public class DashboardApplication {
   @RequestMapping(value = "/", method = RequestMethod.GET)
   public String home() {
       return "Hello Docker World - built " + DateTimeFormatter.ISO_INSTANT.format(buildProperties.getTime());
+  }
+
+  @RequestMapping(value = "/tryredirect", method = RequestMethod.GET)
+  public ResponseEntity<Void> tryRedirect() {
+    return ResponseEntity.status(HttpStatus.FOUND).location(URI.create("/fdimages/one.jpg")).build();
   }
 
   @RequestMapping(value = "/images", method = RequestMethod.GET)
@@ -61,7 +69,8 @@ public class DashboardApplication {
       return ResponseEntity.notFound().build();
     }
 
-    System.out.println("Serving image " + imageResource + " for index " + id);
+    final String nowString = DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(LocalDateTime.now());
+    System.out.println(nowString + " Serving image " + imageResource + " for index " + id);
     InputStream inputStream = null;
     try {
       inputStream = imageResource.getInputStream();
