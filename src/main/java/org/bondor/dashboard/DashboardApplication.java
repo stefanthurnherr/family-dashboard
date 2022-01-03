@@ -1,13 +1,17 @@
 package org.bondor.dashboard;
 
-import java.time.LocalDateTime;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.Random;
+import java.util.List;
 import java.io.IOException;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import java.io.InputStream;
 import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -63,14 +67,16 @@ public class DashboardApplication {
   }
 
   @RequestMapping(value = "/images/{id:[1-9a-z][0-9a-z]*}", method = RequestMethod.GET)
-  public ResponseEntity<byte[]> image(@PathVariable("id") String id) throws Exception {
+  public ResponseEntity<byte[]> image(HttpServletRequest request,
+                                      @PathVariable("id") String id) throws Exception {
     final Resource imageResource = findImageResource(id, allImageResources());
     if (imageResource == null) {
       return ResponseEntity.notFound().build();
     }
 
     final String nowString = DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(LocalDateTime.now());
-    System.out.println(nowString + " Serving image " + imageResource + " for index " + id);
+    System.out.println(nowString + "(from " + getRequestIpAddress(request) + ") "
+        + "Serving image " + imageResource + " for index " + id);
     InputStream inputStream = null;
     try {
       inputStream = imageResource.getInputStream();
@@ -118,6 +124,30 @@ public class DashboardApplication {
 
   public static void main(String[] args) {
       SpringApplication.run(DashboardApplication.class, args);
+  }
+
+  private static String getRequestIpAddress(final HttpServletRequest request) {
+    final List<String> IP_HEADERS = Arrays.asList(
+        "X-Forwarded-For",
+        "Proxy-Client-IP",
+        "WL-Proxy-Client-IP",
+        "HTTP_X_FORWARDED_FOR",
+        "HTTP_X_FORWARDED",
+        "HTTP_X_CLUSTER_CLIENT_IP",
+        "HTTP_CLIENT_IP",
+        "HTTP_FORWARDED_FOR",
+        "HTTP_FORWARDED",
+        "HTTP_VIA",
+        "REMOTE_ADDR");
+    for (String header: IP_HEADERS) {
+      final String value = request.getHeader(header);
+      if (value == null || value.isEmpty()) {
+        continue;
+      }
+      final String[] parts = value.split("\\s*,\\s*");
+      return parts[0];
+    }
+    return request.getRemoteAddr();
   }
 
 }
