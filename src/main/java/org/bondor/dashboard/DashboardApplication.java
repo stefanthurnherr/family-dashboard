@@ -1,5 +1,6 @@
 package org.bondor.dashboard;
 
+import java.util.ArrayList;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Random;
@@ -50,11 +51,11 @@ public class DashboardApplication {
   @RequestMapping(value = "/images", method = RequestMethod.GET)
   public ResponseEntity<String> listImages() throws Exception {
     System.out.println("Listing all available images...");
-    final Resource[] resources = allImageResources();
+    final List<Resource> resources = allImageResources();
     if (resources == null) {
       return ResponseEntity.notFound().build();
     }
-    System.out.println("Found " + resources.length + " available images:");
+    System.out.println("Found " + resources.size() + " available images:");
     final StringBuilder sb = new StringBuilder();
     for (Resource resource : resources) {
       System.out.println("  Found image file: " + resource.getFilename());
@@ -75,8 +76,7 @@ public class DashboardApplication {
     }
 
     final String nowString = DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(LocalDateTime.now());
-    System.out.println(nowString + "(from " + getRequestIpAddress(request) + ") "
-        + "Serving image " + imageResource + " for index " + id);
+    System.out.println(nowString + " Serving image " + imageResource + " for index " + id);
     InputStream inputStream = null;
     try {
       inputStream = imageResource.getInputStream();
@@ -93,7 +93,7 @@ public class DashboardApplication {
     }
   }
 
-  private Resource findImageResource(final String id, final Resource[] resources) {
+  private Resource findImageResource(final String id, final List<Resource> resources) {
     try {
       final long idLong = Long.parseLong(id);
       for (final Resource resource : resources){
@@ -104,22 +104,30 @@ public class DashboardApplication {
       }
     } catch (NumberFormatException e) {
       if ("any".equals(id)) {
-        final int randomIndex = random.nextInt(resources.length);
-        return resources[randomIndex];
+        final int randomIndex = random.nextInt(resources.size());
+        return resources.get(randomIndex);
       }
     }
     System.out.println("  No matching resource found for id=" + id);
     return null;
   }
 
-  private Resource[] allImageResources() throws IOException {
+  private List<Resource> allImageResources() throws IOException {
     final ClassPathResource imagesDirectory = new ClassPathResource("static/");
     if (!imagesDirectory.exists()) {
       return null;
     }
+    final List<Resource> resourceList = new ArrayList<Resource>();
+
     final ClassLoader cl = this.getClass().getClassLoader();
     final ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(cl);
-    return resolver.getResources("classpath*:/static/*.png") ;
+    final Resource[] staticResources = resolver.getResources("classpath*:/static/*.png") ;
+    resourceList.addAll(Arrays.asList(staticResources));
+
+    final Resource[] fdimagesResources = resolver.getResources("file:/opt/family-dashboard-images/**") ;
+    resourceList.addAll(Arrays.asList(fdimagesResources));
+
+    return resourceList;
   }
 
   public static void main(String[] args) {
@@ -145,7 +153,9 @@ public class DashboardApplication {
         continue;
       }
       final String[] parts = value.split("\\s*,\\s*");
-      return parts[0];
+      final String requestIpAddress = parts[0];
+      System.out.println("  from " + requestIpAddress + " (header: " + header + ")");
+      return requestIpAddress;
     }
     return request.getRemoteAddr();
   }
