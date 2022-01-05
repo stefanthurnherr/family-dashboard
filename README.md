@@ -2,7 +2,7 @@
 Dashboard for the whole family shown at home
 
 
-How To Get Started
+How To Set Up an RPi in Chromium kiosk mode
 ======
 * A Raspberry Pi with an sd card, a display, internet connection and power supply
 * Use the excellent [chilipie-kiosk](https://github.com/jareware/chilipie-kiosk/) RPi image to boot directly into full-screen Chrome
@@ -21,8 +21,26 @@ Transfer both the WAR file and the Dockerfile to your RPi
 * ```docker container run --volume ./fdimages:/opt/family-dashboard-images -p 8080:8080 --restart unless-stopped bondor/family-dashboard &```
 * Set the URL for Chromium by creating the file ```/home/pi/chilipie_url.txt``` with url ```http://localhost:8080``` as its first and only line.
 
+How to Install the signal-cli wrapper (docker container)
+=======
+* Install docker-compose (based on [these instructions](https://www.upswift.io/post/install-docker-compose-on-raspberry-pi)):
+    * ```sudo apt-get install libffi-dev libssl-dev```
+    * ```sudo apt install python3-dev```
+    * ```sudo apt-get install -y python3 python3-pip```
+    * ```sudo pip3 install docker-compose```
+* Install the signal-cli wrapper: https://github.com/bbernhard/signal-cli-rest-api/
+* Register a phone number (i.e. your home phone number): https://github.com/bbernhard/signal-cli-rest-api/blob/master/doc/EXAMPLES.md
+    * I used my home phone number and it took several attempts (incl. captcha) with timeouts/"wrong captcha" before I got the call with the confirmation code. So keep cool and try again :-)
+
+How to enable sending images to the Rpi through signal
+======
+* Create a crontab script that periodically calls Signal's /receive API and puts the received images into the dashboard's fdimages folder
+    * ```curl -X GET -H "Content-Type: application/json" 'http://127.0.0.1:8080/v1/receive/<number>'```
+
+
 Ideas for what to show (non-ordered)
 ======
+* Personalized background images
 * Shared calendar
 * Weather
 * Custom (welcome) message for guests
