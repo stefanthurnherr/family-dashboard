@@ -1,0 +1,14 @@
+# systemd service for the Family Dashboard
+# Inspired by https://selfhostedhome.com/start-docker-compose-using-systemd-on-debian/
+#
+
+[Unit]
+Description=Family Dashboard
+
+[Service]
+ExecStart=/home/pi/systemd-dashboard/service start
+ExecStop=/home/pi/systemd-dashboard/service stop
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

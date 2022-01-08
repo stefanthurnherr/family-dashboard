@@ -29,8 +29,16 @@ How to Install the signal-cli wrapper (docker container)
     * ```sudo apt-get install -y python3 python3-pip```
     * ```sudo pip3 install docker-compose```
 * Install the signal-cli wrapper: https://github.com/bbernhard/signal-cli-rest-api/
+* Start the docker container: ```docker-compose -f docker-compose.yml up -d```
 * Register a phone number (i.e. your home phone number): https://github.com/bbernhard/signal-cli-rest-api/blob/master/doc/EXAMPLES.md
     * I used my home phone number and it took several attempts (incl. captcha) with timeouts/"wrong captcha" before I got the call with the confirmation code. So keep cool and try again :-)
+
+How to auto-start the docker containers above when the RPi (re-)boots:
+=======
+* Put the directory systemd-dashboard to /home/pi/
+* Make sure that the bash script is executable: ```chmod +x service```
+* Symlink the systemd service into /etc: ```sudo ln -s /home/pi/systemd-dashboard/dashboard-containers.service /etc/systemd/system/dashboard-containers.service```
+* Use systemctl to start/stop the containers :-)
 
 How to enable sending images to the Rpi through signal
 ======

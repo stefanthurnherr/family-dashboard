@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+#
+# Bash script to startup all dashboard containers
+
+declare -r DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+start() {
+    cd ${DIR}
+
+    docker-compose -f /home/pi/signal-client/docker-compose.yml up -d
+
+    docker container run -d --volume /home/pi/image-provider/fdimages:/opt/family-dashboard-images -p 8080:8080 bondor/family-dashboard
+}
+
+stop() {
+    cd ${DIR}
+    docker-compose stop signal-cli-rest-api
+
+    docker container stop bondor/family-dashboard
+}
+
+case $1 in
+    start) start;;
+    stop) stop;;
+    "") start;;
+    *) echo "Usage: ./service start|stop"
+esac
