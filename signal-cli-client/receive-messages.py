@@ -13,7 +13,7 @@ from datetime import datetime
 SIGNAL_API_URL = 'http://127.0.0.1:8095'
 SIGNAL_PHONE_NUMBER = '<number>'
 
-VERSION = '0.18'
+VERSION = '0.19'
 
 DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
@@ -25,14 +25,21 @@ def receive_messages():
     json_data = response.json() if response and response.status_code == 200 else None
     return json_data
 
-def get_attachment_binary(attachmentId, deleteRemote = False):
+def list_attachments():
+    # curl -X GET -H "Content-Type: application/json" 'http://127.0.0.1:8080/v1/attachments'
+    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+    response = requests.get(SIGNAL_API_URL + '/v1/attachments/', headers=headers)
+    json_data = response.json() if response and response.status_code == 200 else None
+    return json_data
+
+def get_attachment_binary(attachmentId, delete = False):
     # curl -X GET -H "Content-Type: application/json" 'http://127.0.0.1:8080/v1/attachments'
     headers = {} # {'Content-type': 'application/json', 'Accept': 'text/plain'}
     response = requests.get(SIGNAL_API_URL + '/v1/attachments/' + attachmentId, headers=headers)
     if ( not response or response.status_code != 200):
         return None
 
-    if (deleteRemote):
+    if (delete):
         delete_attachment(attachmentId)
 
     return response.content
@@ -53,6 +60,9 @@ if __name__ == "__main__":
 
         messagesFile.write("# running v{} at {}\n".format(VERSION, now_string))
 
+        attachmentList = list_attachments()
+        messagesFile.write("  currently downloaded {} attachments: {}\n".format(len(attachmentList), attachmentList))
+
         messages = receive_messages()
         print(messages)
         if (messages):
@@ -72,10 +82,12 @@ if __name__ == "__main__":
                     #attachmentBytes = base64.decodebytes(attachment)
                     attachmentFilePath = '/home/pi/signal-client/attachments/' + attachmentId + fileExtension
                     with open(attachmentFilePath, 'wb') as attachmentFile:
-                        attachmentFile.write(get_attachment_binary(attachmentId))
+                        attachmentFile.write(get_attachment_binary(attachmentId, True))
 
                     messagesFile.write(" Found attachment {}, saved as {}".format(attachmentId + fileExtension, attachmentFilePath))
                     messagesFile.write('\n')
 
 
             messagesFile.write('\n')
+
+        messagesFile.write('# done with all messages.\n')
