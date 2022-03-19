@@ -10,15 +10,39 @@ import mimetypes
 from datetime import datetime
 
 
+SIGNAL_API_URL = 'http://127.0.0.1:8095'
+SIGNAL_PHONE_NUMBER = '<number>'
+
+VERSION = '0.18'
+
 DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
 def receive_messages():
     # curl -X GET -H "Content-Type: application/json" 'http://127.0.0.1:8080/v1/receive/<number>'
     headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-    response = requests.get('http://127.0.0.1:8095/v1/receive/<number>', headers=headers)
+    response = requests.get(SIGNAL_API_URL + '/v1/receive/' + SIGNAL_PHONE_NUMBER, headers=headers)
     json_data = response.json() if response and response.status_code == 200 else None
     return json_data
+
+def get_attachment_binary(attachmentId, deleteRemote = False):
+    # curl -X GET -H "Content-Type: application/json" 'http://127.0.0.1:8080/v1/attachments'
+    headers = {} # {'Content-type': 'application/json', 'Accept': 'text/plain'}
+    response = requests.get(SIGNAL_API_URL + '/v1/attachments/' + attachmentId, headers=headers)
+    if ( not response or response.status_code != 200):
+        return None
+
+    if (deleteRemote):
+        delete_attachment(attachmentId)
+
+    return response.content
+
+def delete_attachment(attachmentId):
+    # curl -X DELETE -H "Content-Type: application/json" 'http://127.0.0.1:8080/v1/attachments/<id>'
+    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+    response = requests.delete(SIGNAL_API_URL + '/v1/attachments/' + attachmentId, headers=headers)
+    return (response and response.status_code == 200)
+
 
 
 if __name__ == "__main__":
@@ -27,7 +51,7 @@ if __name__ == "__main__":
 
     with open('/home/pi/signal-client/received-messages.txt', 'a') as messagesFile:
 
-        messagesFile.write("# running at {}\n".format(now_string))
+        messagesFile.write("# running v{} at {}\n".format(VERSION, now_string))
 
         messages = receive_messages()
         print(messages)
@@ -43,10 +67,14 @@ if __name__ == "__main__":
                 messagesFile.write('\n')
 
                 for attachment in attachments:
-                    fileName = attachment['id']
+                    attachmentId = attachment['id']
                     fileExtension = mimetypes.guess_extension(attachment['contentType'])
                     #attachmentBytes = base64.decodebytes(attachment)
-                    messagesFile.write(" Found attachment {}".format(fileName + fileExtension))
+                    attachmentFilePath = '/home/pi/signal-client/attachments/' + attachmentId + fileExtension
+                    with open(attachmentFilePath, 'wb') as attachmentFile:
+                        attachmentFile.write(get_attachment_binary(attachmentId))
+
+                    messagesFile.write(" Found attachment {}, saved as {}".format(attachmentId + fileExtension, attachmentFilePath))
                     messagesFile.write('\n')
 
 
