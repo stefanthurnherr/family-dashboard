@@ -11,9 +11,10 @@ from datetime import datetime
 
 
 SIGNAL_API_URL = 'http://127.0.0.1:8095'
-SIGNAL_PHONE_NUMBER = '<number>'
+SIGNAL_PHONE_NUMBER = '+46317132834'
+ATTACHMENTS_FOLDER_PATH = '/home/pi/image-provider/fdimages/'
 
-VERSION = '0.19'
+VERSION = '0.20'
 
 DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
@@ -64,7 +65,7 @@ if __name__ == "__main__":
         messagesFile.write("  currently downloaded {} attachments: {}\n".format(len(attachmentList), attachmentList))
 
         messages = receive_messages()
-        print(messages)
+        #print(messages)
         if (messages):
             for message in messages:
                 messagesFile.write(json.dumps(message, indent=4))
@@ -79,8 +80,7 @@ if __name__ == "__main__":
                 for attachment in attachments:
                     attachmentId = attachment['id']
                     fileExtension = mimetypes.guess_extension(attachment['contentType'])
-                    #attachmentBytes = base64.decodebytes(attachment)
-                    attachmentFilePath = '/home/pi/signal-client/attachments/' + attachmentId + fileExtension
+                    attachmentFilePath = ATTACHMENTS_FOLDER_PATH + attachmentId + fileExtension
                     with open(attachmentFilePath, 'wb') as attachmentFile:
                         attachmentFile.write(get_attachment_binary(attachmentId, True))
 
