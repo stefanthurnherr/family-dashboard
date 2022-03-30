@@ -9,6 +9,8 @@ import mimetypes
 
 from datetime import datetime
 
+import re
+
 
 SIGNAL_API_URL = 'http://127.0.0.1:8095'
 SIGNAL_PHONE_NUMBER = '+46317132834'
@@ -60,8 +62,10 @@ def downloadAndSaveAttachment(attachmentId, contentType):
     return attachmentFilePath
 
 def processMessageCommand(command):
-    // do nothing for now
+    if (re.match(r'^keep ([0-9]*)$'):
+       return True
 
+    return False 
 
 
 if __name__ == "__main__":
@@ -90,7 +94,9 @@ if __name__ == "__main__":
                 messagesFile.write('\n')
 
                 if (messageText.startswith('/')):
-                    processMessageCommand(messageText[1:])
+                    commandRecognized = processMessageCommand(messageText[1:])
+                    messagesFile.write('  Message was recognized as command? {}'.format(commandRecognized)
+                    messagesFile.write('\n')
 
                 else:
                     for attachment in attachments:
