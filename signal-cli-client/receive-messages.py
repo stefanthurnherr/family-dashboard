@@ -59,6 +59,9 @@ def downloadAndSaveAttachment(attachmentId, contentType):
         attachmentFile.write(get_attachment_binary(attachmentId, True))
     return attachmentFilePath
 
+def processMessageCommand(command):
+    // do nothing for now
+
 
 
 if __name__ == "__main__":
@@ -86,12 +89,16 @@ if __name__ == "__main__":
                 messagesFile.write("{} says \"{}\" and has sent {} attachments.".format(senderName, messageText, len(attachments)))
                 messagesFile.write('\n')
 
-                for attachment in attachments:
-                    attachmentId = attachment['id']
-                    attachmentContentType = attachment['contentType']
-                    attachmentFilePath = downloadAndSaveAttachment(attachmentId, attachmentContentType)
-                    messagesFile.write(" Found attachment {} of type {}, saved as {}".format(attachmentId, attachmentContentType, attachmentFilePath))
-                    messagesFile.write('\n')
+                if (messageText.startswith('/')):
+                    processMessageCommand(messageText[1:])
+
+                else:
+                    for attachment in attachments:
+                        attachmentId = attachment['id']
+                        attachmentContentType = attachment['contentType']
+                        attachmentFilePath = downloadAndSaveAttachment(attachmentId, attachmentContentType)
+                        messagesFile.write(" Found attachment {} of type {}, saved as {}".format(attachmentId, attachmentContentType, attachmentFilePath))
+                        messagesFile.write('\n')
 
             messagesFile.write('\n')
 
