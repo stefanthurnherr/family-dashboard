@@ -72,7 +72,8 @@ if __name__ == "__main__":
                 messagesFile.write('\n')
 
                 senderName = message['envelope']['sourceName']
-                messageText = message['envelope']['dataMessage']['message']
+                messageTextRaw = message['envelope']['dataMessage']['message']
+                messageText = messageTextRaw if messageTextRaw else '(no message)'
                 attachments = message['envelope']['dataMessage']['attachments']
                 messagesFile.write("{} says \"{}\" and has sent {} attachments.".format(senderName, messageText, len(attachments)))
                 messagesFile.write('\n')
