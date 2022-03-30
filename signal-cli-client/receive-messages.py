@@ -52,6 +52,14 @@ def delete_attachment(attachmentId):
     return (response and response.status_code == 200)
 
 
+def downloadAndSaveAttachment(attachmentId, contentType):
+    fileExtension = mimetypes.guess_extension(attachment['contentType'])
+    attachmentFilePath = ATTACHMENTS_FOLDER_PATH + attachmentId + fileExtension
+    with open(attachmentFilePath, 'wb') as attachmentFile:
+        attachmentFile.write(get_attachment_binary(attachmentId, True))
+    return attachmentFilePath
+
+
 
 if __name__ == "__main__":
 
@@ -80,14 +88,10 @@ if __name__ == "__main__":
 
                 for attachment in attachments:
                     attachmentId = attachment['id']
-                    fileExtension = mimetypes.guess_extension(attachment['contentType'])
-                    attachmentFilePath = ATTACHMENTS_FOLDER_PATH + attachmentId + fileExtension
-                    with open(attachmentFilePath, 'wb') as attachmentFile:
-                        attachmentFile.write(get_attachment_binary(attachmentId, True))
-
-                    messagesFile.write(" Found attachment {}, saved as {}".format(attachmentId + fileExtension, attachmentFilePath))
+                    attachmentContentType = attachment['contentType']
+                    attachmentFilePath = downloadAndSaveAttachment(attachmentId, attachmentContentType)
+                    messagesFile.write(" Found attachment {} of type {}, saved as {}".format(attachmentId, attachmentContentType, attachmentFilePath))
                     messagesFile.write('\n')
-
 
             messagesFile.write('\n')
 
