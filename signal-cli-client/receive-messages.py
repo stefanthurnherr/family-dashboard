@@ -62,7 +62,7 @@ def downloadAndSaveAttachment(attachmentId, contentType):
     return attachmentFilePath
 
 def processMessageCommand(command):
-    if (re.match(r'^keep ([0-9]*)$')):
+    if (re.match(r'^keep ([0-9]*)$', command)):
        return True
 
     return False 
