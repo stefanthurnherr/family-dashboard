@@ -81,7 +81,6 @@ if __name__ == "__main__":
         messagesFile.write("  currently downloaded {} attachments: {}\n".format(len(attachmentList), attachmentList))
 
         messages = receive_messages()
-        #print(messages)
         if (messages):
             for message in messages:
                 messagesFile.write(json.dumps(message, indent=4))
@@ -110,3 +109,7 @@ if __name__ == "__main__":
             messagesFile.write('\n')
 
         messagesFile.write('# done with all messages.\n')
+
+    print("{} done.".format(datetime.now().strftime(DATETIME_FORMAT)))
+
+
