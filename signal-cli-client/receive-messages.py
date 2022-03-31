@@ -62,7 +62,7 @@ def downloadAndSaveAttachment(attachmentId, contentType):
     return attachmentFilePath
 
 def processMessageCommand(command):
-    if (re.match(r'^keep ([0-9]*)$'):
+    if (re.match(r'^keep ([0-9]*)$')):
        return True
 
     return False 
@@ -71,6 +71,7 @@ def processMessageCommand(command):
 if __name__ == "__main__":
 
     now_string = datetime.now().strftime(DATETIME_FORMAT)
+    print("{} Fetching Signal messages...".format(now_string))
 
     with open('/home/pi/signal-client/received-messages.txt', 'a') as messagesFile:
 
@@ -95,7 +96,7 @@ if __name__ == "__main__":
 
                 if (messageText.startswith('/')):
                     commandRecognized = processMessageCommand(messageText[1:])
-                    messagesFile.write('  Message was recognized as command? {}'.format(commandRecognized)
+                    messagesFile.write('  Message was recognized as command? {}'.format(commandRecognized))
                     messagesFile.write('\n')
 
                 else:
