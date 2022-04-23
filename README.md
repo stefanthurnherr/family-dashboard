@@ -47,11 +47,11 @@ How to enable sending images to the Rpi through signal
 
 How to reset docker if the docker daemon doesn't start anymore
 ======
-sudo apt-get purge docker-ce docker-ce-cli
-sudo rm -rf /var/lib/docker
-sudo shutdown -r now
-sudo apt-get install docker-ce
-docker ps :-)
+* sudo apt-get purge docker-ce docker-ce-cli
+* sudo rm -rf /var/lib/docker
+* sudo shutdown -r now
+* sudo apt-get install docker-ce
+* docker ps :-)
 
 Ideas for what to show (non-ordered)
 ======
