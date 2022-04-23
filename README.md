@@ -45,6 +45,13 @@ How to enable sending images to the Rpi through signal
 * Create a crontab script that periodically calls Signal's /receive API and puts the received images into the dashboard's fdimages folder
     * ```curl -X GET -H "Content-Type: application/json" 'http://127.0.0.1:8080/v1/receive/<number>'```
 
+How to reset docker if the docker daemon doesn't start anymore
+======
+sudo apt-get purge docker-ce docker-ce-cli
+sudo rm -rf /var/lib/docker
+sudo shutdown -r now
+sudo apt-get install docker-ce
+docker ps :-)
 
 Ideas for what to show (non-ordered)
 ======
