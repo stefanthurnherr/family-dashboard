@@ -16,7 +16,7 @@ How To Set Up an RPi in Chromium kiosk mode
 * Try out some docker commmand to verify installation, e.g. ```docker ps```  
 * Build your webapp and create a Dockerfile (I followed [this tutorial](https://medium.com/swlh/how-to-run-spring-boot-application-on-raspberry-pi-using-docker-d633e15ffff2))
     * ```./mvnw package``` if you use maven and the maven-wrapper to build
-Transfer both the WAR file and the Dockerfile to your RPi
+    * Transfer both the WAR file and the Dockerfile to your RPi
 * ```docker build -t bondor/family-dashboard .``` to build the docker image and tag it
 * ```docker container run --volume ./fdimages:/opt/family-dashboard-images -p 8080:8080 --restart unless-stopped bondor/family-dashboard &```
 * Set the URL for Chromium by creating the file ```/home/pi/chilipie_url.txt``` with url ```http://localhost:8080``` as its first and only line.
