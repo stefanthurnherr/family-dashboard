@@ -6,6 +6,7 @@ import json
 
 import base64
 import mimetypes
+import traceback
 
 from datetime import datetime
 
@@ -16,7 +17,7 @@ SIGNAL_API_URL = 'http://127.0.0.1:8095'
 SIGNAL_PHONE_NUMBER = '+46317132834'
 ATTACHMENTS_FOLDER_PATH = '/home/pi/image-provider/fdimages/'
 
-VERSION = '0.20'
+VERSION = '0.21'
 
 DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
@@ -74,42 +75,48 @@ if __name__ == "__main__":
     print("{} Fetching Signal messages...".format(now_string))
 
     with open('/home/pi/signal-client/received-messages.txt', 'a') as messagesFile:
+        try:
+            messagesFile.write("# running v{} at {}\n".format(VERSION, now_string))
 
-        messagesFile.write("# running v{} at {}\n".format(VERSION, now_string))
+            attachmentList = list_attachments()
+            messagesFile.write("  currently downloaded {} attachments: {}\n".format(len(attachmentList), attachmentList))
 
-        attachmentList = list_attachments()
-        messagesFile.write("  currently downloaded {} attachments: {}\n".format(len(attachmentList), attachmentList))
-
-        messages = receive_messages()
-        if (messages):
-            for message in messages:
-                messagesFile.write(json.dumps(message, indent=4))
-                messagesFile.write('\n')
-
-                senderName = message['envelope']['sourceName']
-                messageTextRaw = message['envelope']['dataMessage']['message']
-                messageText = messageTextRaw if messageTextRaw else '(no message)'
-                attachments = message['envelope']['dataMessage']['attachments']
-                messagesFile.write("{} says \"{}\" and has sent {} attachments.".format(senderName, messageText, len(attachments)))
-                messagesFile.write('\n')
-
-                if (messageText.startswith('/')):
-                    commandRecognized = processMessageCommand(messageText[1:])
-                    messagesFile.write('  Message was recognized as command? {}'.format(commandRecognized))
+            messages = receive_messages()
+            if (messages):
+                for message in messages:
+                    messagesFile.write(json.dumps(message, indent=4))
                     messagesFile.write('\n')
 
-                else:
-                    for attachment in attachments:
-                        attachmentId = attachment['id']
-                        attachmentContentType = attachment['contentType']
-                        attachmentFilePath = downloadAndSaveAttachment(attachmentId, attachmentContentType)
-                        messagesFile.write(" Found attachment {} of type {}, saved as {}".format(attachmentId, attachmentContentType, attachmentFilePath))
+                    senderName = message['envelope']['sourceName']
+                    messageTextRaw = message['envelope']['dataMessage']['message']
+                    messageText = messageTextRaw if messageTextRaw else '(no message)'
+                    attachments = message['envelope']['dataMessage']['attachments']
+                    messagesFile.write("{} says \"{}\" and has sent {} attachments.".format(senderName, messageText, len(attachments)))
+                    messagesFile.write('\n')
+
+                    if (messageText.startswith('/')):
+                        commandRecognized = processMessageCommand(messageText[1:])
+                        messagesFile.write('  Message was recognized as command? {}'.format(commandRecognized))
                         messagesFile.write('\n')
 
+                    else:
+                        for attachment in attachments:
+                            attachmentId = attachment['id']
+                            attachmentContentType = attachment['contentType']
+                            attachmentFilePath = downloadAndSaveAttachment(attachmentId, attachmentContentType)
+                            messagesFile.write(" Found attachment {} of type {}, saved as {}".format(attachmentId, attachmentContentType, attachmentFilePath))
+                            messagesFile.write('\n')
+
+                messagesFile.write('\n')
+
+            messagesFile.write('# done with all messages.\n')
+
+        except KeyError as e:
+            messagesFile.write('Got KeyError exception:')
+            messagesFile.write(traceback.format_exc())
             messagesFile.write('\n')
 
-        messagesFile.write('# done with all messages.\n')
+        print("{} done.".format(datetime.now().strftime(DATETIME_FORMAT)))
 
-    print("{} done.".format(datetime.now().strftime(DATETIME_FORMAT)))
 
 
