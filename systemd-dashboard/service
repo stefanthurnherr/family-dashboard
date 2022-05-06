@@ -7,6 +7,9 @@ declare -r DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 start() {
     cd ${DIR}
 
+    # More and more unused containers otherwise since we restart every night
+    docker system prune --force
+
     docker-compose -f /home/pi/signal-client/docker-compose.yml up -d
 
     docker container run -d --volume /home/pi/image-provider/fdimages:/opt/family-dashboard-images -p 8080:8080 bondor/family-dashboard
