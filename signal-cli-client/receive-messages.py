@@ -7,6 +7,7 @@ import json
 import base64
 import mimetypes
 import traceback
+import os
 
 from datetime import datetime
 
@@ -63,8 +64,23 @@ def downloadAndSaveAttachment(attachmentId, contentType):
     return attachmentFilePath
 
 def processMessageCommand(command):
-    if (re.match(r'^keep ([0-9]*)$', command)):
-       return True
+    if (m := re.match(r'^keep ([0-9]*)$', command)):
+
+        keepCount = int(m.group(1))
+        print('keepCount parsed: ' + str(keepCount))
+
+        dirEntryList = []
+        for dirEntry in os.scandir(ATTACHMENTS_FOLDER_PATH):
+            if (dirEntry.is_file()):
+                dirEntryList.append(dirEntry)
+
+        dirEntryList = sorted(dirEntryList, key=lambda x: x.stat().st_ctime)
+        deleteDirEntryList = dirEntryList[keepCount:]
+
+        for dirEntry in dirEntryList:
+            print(dirEntry.name + ' was created at ' + str(dirEntry.stat().st_ctime))
+
+        return True
 
     return False 
 
@@ -86,6 +102,11 @@ if __name__ == "__main__":
                 for message in messages:
                     messagesFile.write(json.dumps(message, indent=4))
                     messagesFile.write('\n')
+
+                    if ('typingMessage' in message['envelope']):
+                        # "Typing message" state changed - ignore these messages 
+                        continue
+
 
                     senderName = message['envelope']['sourceName']
                     dataMessage = message['envelope']['dataMessage']
