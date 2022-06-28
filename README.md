@@ -19,7 +19,7 @@ How To Set Up an RPi in Chromium kiosk mode
     * Transfer both the WAR file and the Dockerfile to your RPi
 * ```docker build -t bondor/family-dashboard .``` to build the docker image and tag it
 * ```docker container run --volume /home/pi/fdimages:/opt/family-dashboard-images -p 8080:8080 --restart unless-stopped bondor/family-dashboard &```
-* Set the URL for Chromium by creating the file ```/home/pi/chilipie_url.txt``` with url ```http://localhost:8080``` as its first and only line.
+* Set the URL for Chromium by creating the file ```/home/pi/chilipie_url.txt``` with url ```http://localhost:8080/images/any``` as its first and only line.
 
 How to Install the signal-cli wrapper (docker container)
 =======
