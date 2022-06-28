@@ -28,8 +28,7 @@ How to Install the signal-cli wrapper (docker container)
     * ```sudo apt install python3-dev```
     * ```sudo apt-get install -y python3 python3-pip```
     * ```sudo pip3 install docker-compose```
-* Install the signal-cli wrapper: https://github.com/bbernhard/signal-cli-rest-api/
-* Start the docker container: ```docker-compose -f docker-compose.yml up -d```
+* Start the docker container for the "signal-cli-rest-api": ```docker-compose -f docker-compose.yml up -d``` (uses the excellent Signal CLI REST API from [this github repo](https://github.com/bbernhard/signal-cli-rest-api/))
 * Register a phone number (i.e. your home phone number): https://github.com/bbernhard/signal-cli-rest-api/blob/master/doc/EXAMPLES.md
     * I used my home phone number and it took several attempts (incl. captcha) with timeouts/"wrong captcha" before I got the call with the confirmation code. So keep cool and try again :-)
 
