@@ -37,7 +37,9 @@ How to auto-start the docker containers above when the RPi (re-)boots:
 * Put the directory systemd-dashboard to /home/pi/
 * Make sure that the bash script is executable: ```chmod +x service```
 * Symlink the systemd service into /etc: ```sudo ln -s /home/pi/systemd-dashboard/dashboard-containers.service /etc/systemd/system/dashboard-containers.service```
-* Use systemctl to start/stop the containers :-)
+* Enable the systemd service: ```sudo systemctl enable dashboard-containers.service```
+* Reboot
+* The systemd service should automatically start upon every (re-)boot. Use systemctl to start/stop the containers :-)
 
 How to enable sending images to the Rpi through signal
 ======
