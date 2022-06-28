@@ -15,7 +15,7 @@ import re
 
 
 SIGNAL_API_URL = 'http://127.0.0.1:8095'
-SIGNAL_PHONE_NUMBER = '+46317132834'
+SIGNAL_PHONE_NUMBER = '+46987654321'
 ATTACHMENTS_FOLDER_PATH = '/home/pi/image-provider/fdimages/'
 
 RECEIVED_MESSAGES_LOG_FILE_PATH = '/home/pi/signal-client/received-messages.txt'
