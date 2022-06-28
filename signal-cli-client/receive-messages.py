@@ -18,6 +18,8 @@ SIGNAL_API_URL = 'http://127.0.0.1:8095'
 SIGNAL_PHONE_NUMBER = '+46317132834'
 ATTACHMENTS_FOLDER_PATH = '/home/pi/image-provider/fdimages/'
 
+RECEIVED_MESSAGES_LOG_FILE_PATH = '/home/pi/signal-client/received-messages.txt'
+
 VERSION = '0.21'
 
 DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
@@ -82,7 +84,7 @@ def processMessageCommand(command):
 
         return True
 
-    return False 
+    return False
 
 
 if __name__ == "__main__":
@@ -90,7 +92,7 @@ if __name__ == "__main__":
     now_string = datetime.now().strftime(DATETIME_FORMAT)
     print("{} Fetching Signal messages...".format(now_string))
 
-    with open('/home/pi/signal-client/received-messages.txt', 'a') as messagesFile:
+    with open(RECEIVED_MESSAGES_LOG_FILE_PATH, 'a') as messagesFile:
         try:
             messagesFile.write("# running v{} at {}\n".format(VERSION, now_string))
 
@@ -104,7 +106,7 @@ if __name__ == "__main__":
                     messagesFile.write('\n')
 
                     if ('typingMessage' in message['envelope']):
-                        # "Typing message" state changed - ignore these messages 
+                        # "Typing message" state changed - ignore these messages
                         continue
 
 
@@ -139,6 +141,3 @@ if __name__ == "__main__":
             messagesFile.write('\n')
 
         print("{} done.".format(datetime.now().strftime(DATETIME_FORMAT)))
-
-
-
