@@ -41,6 +41,15 @@ How to auto-start the docker containers above when the RPi (re-)boots:
 * Reboot
 * The systemd service should automatically start upon every (re-)boot. Use systemctl to start/stop the containers :-)
 
+How to glue the whole thing together using crontab
+======
+# Reboot every night at 03:00
+```0 3 * * * sudo reboot```
+# Check for new Signal messages often
+```*/3 * * * * /home/pi/signal-message-consumer/receive-messages.py &> /home/pi/signal-message-consumer/cron.log```
+# Reload webpage at regular interval ("slideshow speed")
+```*/5 * * * * xdotool key ctrl+R```
+
 How to enable sending images to the Rpi through signal
 ======
 * Create a crontab script that periodically calls Signal's /receive API and puts the received images into the dashboard's fdimages folder
