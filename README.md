@@ -18,7 +18,7 @@ How To Set Up an RPi in Chromium kiosk mode
     * ```./mvnw package``` if you use maven and the maven-wrapper to build
     * Transfer both the WAR file and the Dockerfile to your RPi
 * ```docker build -t bondor/family-dashboard .``` to build the docker image and tag it
-* ```docker container run --volume /home/pi/fdimages:/opt/family-dashboard-images -p 8080:8080 --restart unless-stopped bondor/family-dashboard &```
+* ```docker container run --volume /home/pi/fdimages:/opt/family-dashboard-images -p 8080:8080 bondor/family-dashboard```
 * Set the URL for Chromium by creating the file ```/home/pi/chilipie_url.txt``` with url ```http://localhost:8080/images/any``` as its first and only line.
 
 How to Install the signal-cli wrapper (docker container)
@@ -31,6 +31,7 @@ How to Install the signal-cli wrapper (docker container)
 * Start the docker container for the "signal-cli-rest-api": ```docker-compose -f docker-compose.yml up -d``` (uses the excellent Signal CLI REST API from [this github repo](https://github.com/bbernhard/signal-cli-rest-api/))
 * Register a phone number (i.e. your home phone number): https://github.com/bbernhard/signal-cli-rest-api/blob/master/doc/EXAMPLES.md
     * I used my home phone number and it took several attempts (incl. captcha) with timeouts/"wrong captcha" before I got the call with the confirmation code. So keep cool and try again :-)
+    * Use --data-binary "@data.txt" to specify request body data from textfile ./data.txt
 * Change the phone number in receive-messages.py (constant defined at the top)
 
 How to auto-start the docker containers above when the RPi (re-)boots:
