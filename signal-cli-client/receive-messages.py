@@ -97,7 +97,7 @@ if __name__ == "__main__":
             messagesFile.write("# running v{} at {}\n".format(VERSION, now_string))
 
             attachmentList = list_attachments()
-            messagesFile.write("  currently downloaded {} attachments: {}\n".format(len(attachmentList), attachmentList))
+            messagesFile.write("  currently downloaded {} attachments: {}\n".format(len(attachmentList) if attachmentList else 0, attachmentList))
 
             messages = receive_messages()
             if (messages):
