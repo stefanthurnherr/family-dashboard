@@ -113,20 +113,31 @@ public class DashboardApplication {
   }
 
   private List<Resource> allImageResources() throws IOException {
-    final ClassPathResource imagesDirectory = new ClassPathResource("static/");
-    if (!imagesDirectory.exists()) {
-      return null;
-    }
-    final List<Resource> resourceList = new ArrayList<Resource>();
-
     final ClassLoader cl = this.getClass().getClassLoader();
     final ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(cl);
-    final Resource[] staticResources = resolver.getResources("classpath*:/static/*.png") ;
-    resourceList.addAll(Arrays.asList(staticResources));
+
+    final List<Resource> resourceList = new ArrayList<Resource>();
 
     final Resource[] fdimagesResources = resolver.getResources("file:/opt/family-dashboard-images/**") ;
     resourceList.addAll(Arrays.asList(fdimagesResources));
 
+    if (resourceList.isEmpty()) {
+      resourceList.addAll(allStaticResources(resolver));
+      System.out.println("No images found, choosing from " + resourceList.size() + " default images instead.");      
+    }
+
+    return resourceList;
+  }
+
+  private List<Resource> allStaticResources(final ResourcePatternResolver resolver) throws IOException {
+    final List<Resource> resourceList = new ArrayList<Resource>();
+    final ClassPathResource imagesDirectory = new ClassPathResource("static/");
+    if (!imagesDirectory.exists()) {
+      return resourceList;
+    }
+
+    final Resource[] staticResources = resolver.getResources("classpath*:/static/*.png") ;
+    resourceList.addAll(Arrays.asList(staticResources));
     return resourceList;
   }
 
