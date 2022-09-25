@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.2/dist/css/themes/splide-skyblue.min.css"
+    />
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.2/dist/js/splide.min.js"
+    ></script>
+    <title>Gallery</title>
+
+    <style>
+
+      body {
+        background-color: black;
+      }
+
+      .splide {
+        margin: 0 auto;
+      }
+
+      .splide__slide img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      .thumbnails {
+        display: flex;
+        margin: 1rem auto 0;
+        padding: 0;
+        justify-content: center;
+      }
+
+      .thumbnail {
+        width: 70px;
+        height: 70px;
+        overflow: hidden;
+        list-style: none;
+        margin: 0 0.2rem;
+        cursor: pointer;
+        opacity: 0.3;
+      }
+
+      .thumbnail.is-active {
+        opacity: 1;
+      }
+
+      .thumbnail img {
+        width: 100%;
+        height: auto;
+      }
+
+    </style>
+  </head>
+
+  <body>
+    <section id="main-slider" class="splide" aria-label="My Image Gallery (by stethu and splidejs)">
+      <div class="splide__track">
+        <ul class="splide__list">
+          <li th:each="imageUrl : *{imageUrls}" class="splide__slide">
+            <img th:src="@{${'' + imageUrl + ''}}" alt="" />
+          </li>
+        </ul>
+      </div>
+
+      <button class="splide__toggle" type="button">
+	      <span class="splide__toggle__play">Play</span>
+	      <span class="splide__toggle__pause">Pause</span>
+      </button>
+
+    </section>
+
+    <ul id="thumbnails" class="thumbnails">
+      <li th:each="imageUrl : *{imageUrls}" class="thumbnail">
+        <img th:src="@{${'' + imageUrl + ''}}" alt="" />
+      </li>
+    </ul>
+
+    <script>
+      var splide = new Splide('#main-slider', {
+        type: 'loop', // slide,loop,fade
+        //width: 1200,
+        //height: 600,
+        fixedWidth: 1440,
+        fixedHeight: 660,
+        //autoWidth: true,
+        pagination: false,
+        //cover: true, // use CSS background-image instead of src
+        autoplay: true,
+        interval: 3000, //autoplay interval, milliseconds
+        arrows: false,
+      });
+
+      var thumbnails = document.getElementsByClassName('thumbnail');
+      var current;
+
+      for (var i = 0; i < thumbnails.length; i++) {
+        initThumbnail(thumbnails[i], i);
+      }
+
+      function initThumbnail(thumbnail, index) {
+        thumbnail.addEventListener('click', function () {
+          splide.go(index);
+        });
+      }
+
+      splide.on('mounted move', function () {
+        console.log('got mounted move event');
+        var end  = splide.Components.Controller.getEnd() + 1;
+
+        var thumbnail = thumbnails[splide.index];
+        if (thumbnail) {
+          if (current) {
+            current.classList.remove('is-active');
+          }
+          thumbnail.classList.add('is-active');
+          current = thumbnail;
+        }
+      });
+
+      splide.mount();
+    </script>
+  </body>
+</html>

@@ -10,4 +10,9 @@ class DashboardApplicationTests {
 	void contextLoads() {
 	}
 
+	@Test
+	void list_images() {
+
+	}
+
 }

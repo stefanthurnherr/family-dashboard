@@ -112,7 +112,7 @@ public class DashboardApplication {
     return null;
   }
 
-  private List<Resource> allImageResources() throws IOException {
+  protected List<Resource> allImageResources() throws IOException {
     final ClassLoader cl = this.getClass().getClassLoader();
     final ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(cl);
 
@@ -123,7 +123,7 @@ public class DashboardApplication {
 
     if (resourceList.isEmpty()) {
       resourceList.addAll(allStaticResources(resolver));
-      System.out.println("No images found, choosing from " + resourceList.size() + " default images instead.");      
+      System.out.println("No images found, choosing from " + resourceList.size() + " default images instead.");
     }
 
     return resourceList;
