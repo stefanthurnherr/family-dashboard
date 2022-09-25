@@ -67,7 +67,7 @@ public class DashboardApplication {
             .body(sb.toString());
   }
 
-  @RequestMapping(value = "/images/{id:[1-9a-z][0-9a-z]*}", method = RequestMethod.GET)
+  @RequestMapping(value = "/images/{id:[0-9a-zA-Z_\\-]*.(?:jpg|png|jpeg)}", method = RequestMethod.GET)
   public ResponseEntity<byte[]> image(HttpServletRequest request,
                                       @PathVariable("id") String id) throws Exception {
     final Resource imageResource = findImageResource(id, allImageResources());
@@ -76,7 +76,7 @@ public class DashboardApplication {
     }
 
     final String nowString = DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(LocalDateTime.now());
-    System.out.println(nowString + " Serving image " + imageResource + " for index " + id);
+    System.out.println(nowString + " Serving image " + imageResource + " for id=" + id);
     InputStream inputStream = null;
     try {
       inputStream = imageResource.getInputStream();
@@ -94,19 +94,16 @@ public class DashboardApplication {
   }
 
   private Resource findImageResource(final String id, final List<Resource> resources) {
-    try {
-      final long idLong = Long.parseLong(id);
-      for (final Resource resource : resources){
-        System.out.println("  Checking whether " + resource.getFilename() + " matches...");
-        if (resource.getFilename().equals(Long.toString(idLong) + ".png")) {
-          return resource;
-        }
+    for (final Resource resource : resources) {
+      System.out.println("  Checking whether " + resource.getFilename() + " matches id=" + id + "...");
+      if (resource.getFilename().equals(id)) {
+        return resource;
       }
-    } catch (NumberFormatException e) {
-      if ("any".equals(id)) {
-        final int randomIndex = random.nextInt(resources.size());
-        return resources.get(randomIndex);
-      }
+    }
+
+    if ("any".equals(id)) {
+      final int randomIndex = random.nextInt(resources.size());
+      return resources.get(randomIndex);
     }
     System.out.println("  No matching resource found for id=" + id);
     return null;

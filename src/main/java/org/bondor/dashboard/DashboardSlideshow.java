@@ -5,13 +5,11 @@ import java.util.List;
 
 import org.springframework.core.io.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.stereotype.Controller;
 
-@SpringBootApplication
 @Controller
 public class DashboardSlideshow {
 
@@ -27,7 +25,7 @@ public class DashboardSlideshow {
     final List<String> imageUrls = new ArrayList<String>();
     for (Resource resource : resources) {
       System.out.println("  Found image file: " + resource.getFilename() + " at " + resource.getURI());
-      imageUrls.add(resource.getFilename());
+      imageUrls.add("images/" + resource.getFilename());
     }
 
     model.addAttribute("imageUrls", imageUrls);
