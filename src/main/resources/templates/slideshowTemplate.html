@@ -30,11 +30,24 @@
         object-fit: contain;
       }
 
+      .nav-container {
+        position: absolute;
+        bottom: 0px;
+        width: 100%;
+      }
+
       .thumbnails {
         display: flex;
         margin: 1rem auto 0;
         padding: 0;
         justify-content: center;
+        transform: translateY(150px);
+        transition: transform .5s cubic-bezier(.4,0,.2,1);
+      }
+
+      .nav-container:hover .thumbnails {
+        transform: translateY(0px);
+        background-color: #222222;
       }
 
       .thumbnail {
@@ -68,21 +81,20 @@
           </li>
         </ul>
       </div>
-
-      <button class="splide__toggle" type="button">
-	      <span class="splide__toggle__play">Play</span>
-	      <span class="splide__toggle__pause">Pause</span>
-      </button>
-
     </section>
 
-    <ul id="thumbnails" class="thumbnails">
-      <li th:each="imageUrl : *{imageUrls}" class="thumbnail">
-        <img th:src="@{${'' + imageUrl + ''}}" alt="" />
-      </li>
-    </ul>
+    <div class="nav-container">
+      <ul id="thumbnails" class="thumbnails">
+        <li th:each="imageUrl : *{imageUrls}" class="thumbnail">
+          <img th:src="@{${'' + imageUrl + ''}}" alt="" />
+        </li>
+      </ul>
+    </div>
 
     <script>
+      var fullWidth = window.screen.width; //  * window.devicePixelRatio;
+      var fullHeight = window.screen.height; // * window.devicePixelRatio;
+
       var splide = new Splide('#main-slider', {
         type: 'loop', // slide,loop,fade
         //width: 1200,
@@ -90,8 +102,8 @@
         //
         //1024x600 -> 1024x440
         //1440x900 -> 1440x660
-        fixedWidth: 1024,
-        fixedHeight: 440,
+        fixedWidth: fullWidth,
+        fixedHeight: fullHeight * 50/60,
         //autoWidth: true,
         pagination: false,
         //cover: true, // use CSS background-image instead of src
@@ -114,7 +126,6 @@
       }
 
       splide.on('mounted move', function () {
-        console.log('got mounted move event');
         var end  = splide.Components.Controller.getEnd() + 1;
 
         var thumbnail = thumbnails[splide.index];
