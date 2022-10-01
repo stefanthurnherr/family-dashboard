@@ -18,10 +18,16 @@
 
       body {
         background-color: black;
+        overflow: hidden;
+        height: 100%;
+        width: 100%;
+        padding: 0;
+        margin: 0;
       }
 
       .splide {
         margin: 0 auto;
+        padding: 0;
       }
 
       .splide__slide img {
@@ -38,7 +44,7 @@
 
       .thumbnails {
         display: flex;
-        margin: 1rem auto 0;
+        margin: 0 auto;
         padding: 0;
         justify-content: center;
         transform: translateY(150px);
@@ -97,13 +103,8 @@
 
       var splide = new Splide('#main-slider', {
         type: 'loop', // slide,loop,fade
-        //width: 1200,
-        //height: 600,
-        //
-        //1024x600 -> 1024x440
-        //1440x900 -> 1440x660
         fixedWidth: fullWidth,
-        fixedHeight: fullHeight * 50/60,
+        fixedHeight: fullHeight,
         //autoWidth: true,
         pagination: false,
         //cover: true, // use CSS background-image instead of src
