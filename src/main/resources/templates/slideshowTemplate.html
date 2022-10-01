@@ -42,7 +42,7 @@
         width: 100%;
       }
 
-      .thumbnails {
+      .nav-container .thumbnails {
         display: flex;
         margin: 0 auto;
         padding: 0;
@@ -59,7 +59,6 @@
       .thumbnail {
         width: 70px;
         height: 70px;
-        overflow: hidden;
         list-style: none;
         margin: 0 0.2rem;
         cursor: pointer;
@@ -79,7 +78,20 @@
   </head>
 
   <body>
+
     <section id="main-slider" class="splide" aria-label="My Image Gallery (by stethu and splidejs)">
+
+      <div class="splide__progress">
+        <div class="splide__progress__bar"></div>
+      </div>
+
+      <button type="button" onClick="window.location.reload()">Reload Page</button>
+
+      <button class="splide__toggle" type="button">
+    	  <span class="splide__toggle__play">Play</span>
+    	  <span class="splide__toggle__pause">Pause</span>
+      </button>
+
       <div class="splide__track">
         <ul class="splide__list">
           <li th:each="imageUrl : *{imageUrls}" class="splide__slide">
@@ -98,48 +110,61 @@
     </div>
 
     <script>
-      var fullWidth = window.screen.width; //  * window.devicePixelRatio;
-      var fullHeight = window.screen.height; // * window.devicePixelRatio;
+      document.addEventListener('DOMContentLoaded', function() {
 
-      var splide = new Splide('#main-slider', {
-        type: 'loop', // slide,loop,fade
-        fixedWidth: fullWidth,
-        fixedHeight: fullHeight,
-        //autoWidth: true,
-        pagination: false,
-        //cover: true, // use CSS background-image instead of src
-        autoplay: true,
-        interval: 3000, //autoplay interval, milliseconds
-        arrows: false,
-      });
+        var fullWidth = window.screen.width; //  * window.devicePixelRatio;
+        var fullHeight = window.screen.height; // * window.devicePixelRatio;
 
-      var thumbnails = document.getElementsByClassName('thumbnail');
-      var current;
-
-      for (var i = 0; i < thumbnails.length; i++) {
-        initThumbnail(thumbnails[i], i);
-      }
-
-      function initThumbnail(thumbnail, index) {
-        thumbnail.addEventListener('click', function () {
-          splide.go(index);
+        var splide = new Splide('#main-slider', {
+          type: 'loop', // slide,loop,fade
+          fixedWidth: fullWidth,
+          fixedHeight: fullHeight,
+          //autoWidth: true,
+          pagination: false,
+          //cover: true, // use CSS background-image instead of src
+          autoplay: true,
+          interval: 3000, //autoplay interval, milliseconds
+          arrows: false,
+          pauseOnHover: false,
+          pauseOnFocus: false,
         });
-      }
 
-      splide.on('mounted move', function () {
-        var end  = splide.Components.Controller.getEnd() + 1;
+        var thumbnails = document.getElementsByClassName('thumbnail');
+        var current;
 
-        var thumbnail = thumbnails[splide.index];
-        if (thumbnail) {
-          if (current) {
-            current.classList.remove('is-active');
-          }
-          thumbnail.classList.add('is-active');
-          current = thumbnail;
+        for (var i = 0; i < thumbnails.length; i++) {
+          initThumbnail(thumbnails[i], i);
         }
-      });
 
-      splide.mount();
+        function initThumbnail(thumbnail, index) {
+          thumbnail.addEventListener('click', function () {
+            splide.go(index);
+
+            var pauseElement = document.getElementsByClassName('splide__toggle__pause')[0];
+            var pauseElementStyle = window.getComputedStyle(pauseElement);
+            if (pauseElementStyle.display !== 'none') {
+              var pauseButton = document.getElementsByClassName('splide__toggle')[0];
+              pauseButton.click();
+            }
+
+          });
+        }
+
+        splide.on('mounted move', function () {
+          var end  = splide.Components.Controller.getEnd() + 1;
+
+          var thumbnail = thumbnails[splide.index];
+          if (thumbnail) {
+            if (current) {
+              current.classList.remove('is-active');
+            }
+            thumbnail.classList.add('is-active');
+            current = thumbnail;
+          }
+        });
+
+        splide.mount();
+      });
     </script>
   </body>
 </html>
