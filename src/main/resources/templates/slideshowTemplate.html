@@ -118,7 +118,7 @@
       <div class="splide__track">
         <ul class="splide__list">
           <li th:each="imageUrl : *{imageUrls}" class="splide__slide">
-            <img th:data-splide-lazy="@{${'' + imageUrl + ''}}" alt="" />
+            <img th:src="@{${'' + imageUrl + ''}}" alt="" />
           </li>
         </ul>
       </div>
@@ -160,7 +160,7 @@
           arrows: false,
           pauseOnHover: false,
           pauseOnFocus: false,
-          lazyLoad: 'sequential',
+          //lazyLoad: 'sequential',
         });
 
         var reloadPageButton = document.getElementsByClassName('thumbnail')[0];
