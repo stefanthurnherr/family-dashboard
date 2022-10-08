@@ -81,16 +81,32 @@
 
     <section id="main-slider" class="splide" aria-label="My Image Gallery (by stethu and splidejs)">
 
+<!--
       <div class="splide__progress">
         <div class="splide__progress__bar"></div>
       </div>
+-->
 
-      <button type="button" onClick="window.location.reload()">Reload Page</button>
+      <div class="splide__toggle">
+        <!-- bootstrap icon 'play-circle-fill' -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="#666666" class="splide__toggle__play" viewBox="0 0 16 16">
+          <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.79 5.093A.5.5 0 0 0 6 5.5v5a.5.5 0 0 0 .79.407l3.5-2.5a.5.5 0 0 0 0-.814l-3.5-2.5z"/>
+        </svg>
+        <!-- bootstrap icon 'pause-circle-fill' -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="#666666" class="splide__toggle__pause" viewBox="0 0 16 16">
+          <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.25 5C5.56 5 5 5.56 5 6.25v3.5a1.25 1.25 0 1 0 2.5 0v-3.5C7.5 5.56 6.94 5 6.25 5zm3.5 0c-.69 0-1.25.56-1.25 1.25v3.5a1.25 1.25 0 1 0 2.5 0v-3.5C11 5.56 10.44 5 9.75 5z"/>
+        </svg>
+      </div>
 
-      <button class="splide__toggle" type="button">
-    	  <span class="splide__toggle__play">Play</span>
-    	  <span class="splide__toggle__pause">Pause</span>
-      </button>
+      <br/>
+
+      <div onClick="window.location.reload()">
+        <!-- bootstrap icon 'arrow-counterclockwise' -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="#666666" viewBox="0 0 16 16">
+          <path fill-rule="evenodd" d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2v1z"/>
+          <path d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466z"/>
+        </svg>
+      </div>
 
       <div class="splide__track">
         <ul class="splide__list">
