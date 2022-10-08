@@ -104,9 +104,9 @@
           </svg>
         </div>
 
-        <br/>
+        <br/><br/>
 
-        <div class="control-reload-page">
+        <div class="controls-reload-page">
           <!-- bootstrap icon 'arrow-counterclockwise' -->
           <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="#666666" viewBox="0 0 16 16">
             <path fill-rule="evenodd" d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2v1z"/>
@@ -118,7 +118,7 @@
       <div class="splide__track">
         <ul class="splide__list">
           <li th:each="imageUrl : *{imageUrls}" class="splide__slide">
-            <img th:src="@{${'' + imageUrl + ''}}" alt="" />
+            <img th:data-splide-lazy="@{${'' + imageUrl + ''}}" alt="" />
           </li>
         </ul>
       </div>
@@ -160,10 +160,10 @@
           arrows: false,
           pauseOnHover: false,
           pauseOnFocus: false,
-          //lazyLoad: 'sequential',
+          lazyLoad: 'sequential',
         });
 
-        var reloadPageButton = document.getElementsByClassName('thumbnail')[0];
+        var reloadPageButton = document.getElementsByClassName('controls-reload-page')[0];
         reloadPageButton.addEventListener('click', function () {
           ensurePaused();
           window.location.reload();
