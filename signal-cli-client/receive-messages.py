@@ -8,6 +8,7 @@ import base64
 import mimetypes
 import traceback
 import os
+import glob
 
 from datetime import datetime
 
@@ -16,11 +17,13 @@ import re
 
 SIGNAL_API_URL = 'http://127.0.0.1:8095'
 SIGNAL_PHONE_NUMBER = '+46987654321'
-ATTACHMENTS_FOLDER_PATH = '/home/pi/image-provider/fdimages/'
 
 RECEIVED_MESSAGES_LOG_FILE_PATH = '/home/pi/signal-client/received-messages.txt'
 
-VERSION = '0.21'
+ATTACHMENTS_FOLDER_PATH = '/home/pi/image-provider/fdimages/'
+ATTACHMENTS_KEEP_MAX_COUNT = 20
+
+VERSION = '0.22'
 
 DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
@@ -65,6 +68,19 @@ def downloadAndSaveAttachment(attachmentId, contentType):
         attachmentFile.write(get_attachment_binary(attachmentId, True))
     return attachmentFilePath
 
+def purgeOldestAttachmentsIfTooMany():
+    # attachments = [f for f in os.listdir(ATTACHMENTS_FOLDER_PATH)]
+    attachments = glob.glob(ATTACHMENTS_FOLDER_PATH + '*.jpg', recursive=False)
+    tooManyCount = len(attachments) - ATTACHMENTS_KEEP_MAX_COUNT
+    
+    if (tooManyCount > 0):
+        print('Too many attachments, max count exceeded by', tooManyCount)
+        attachments.sort(key=os.path.getmtime)
+        for attachment in attachments[0:tooManyCount]:
+            print('  Deleting', attachment)
+            os.remove(attachment)
+
+
 def processMessageCommand(command):
     if (m := re.match(r'^keep ([0-9]*)$', command)):
 
@@ -84,7 +100,7 @@ def processMessageCommand(command):
 
         return True
 
-    return False
+    return False 
 
 
 if __name__ == "__main__":
@@ -97,7 +113,7 @@ if __name__ == "__main__":
             messagesFile.write("# running v{} at {}\n".format(VERSION, now_string))
 
             attachmentList = list_attachments()
-            messagesFile.write("  currently downloaded {} attachments: {}\n".format(len(attachmentList) if attachmentList else 0, attachmentList))
+            messagesFile.write("  currently downloaded {} attachments: {}\n".format(len(attachmentList), attachmentList))
 
             messages = receive_messages()
             if (messages):
@@ -106,7 +122,7 @@ if __name__ == "__main__":
                     messagesFile.write('\n')
 
                     if ('typingMessage' in message['envelope']):
-                        # "Typing message" state changed - ignore these messages
+                        # "Typing message" state changed - ignore these messages 
                         continue
 
 
@@ -130,8 +146,12 @@ if __name__ == "__main__":
                             attachmentFilePath = downloadAndSaveAttachment(attachmentId, attachmentContentType)
                             messagesFile.write(" Found attachment {} of type {}, saved as {}".format(attachmentId, attachmentContentType, attachmentFilePath))
                             messagesFile.write('\n')
+                        
+                        messagesFile.write('\n')
+                        
+                        if (attachments):    
+                            purgeOldAttachmentsIfTooMany()
 
-                messagesFile.write('\n')
 
             messagesFile.write('# done with all messages.\n')
 
@@ -141,3 +161,6 @@ if __name__ == "__main__":
             messagesFile.write('\n')
 
         print("{} done.".format(datetime.now().strftime(DATETIME_FORMAT)))
+
+
+
