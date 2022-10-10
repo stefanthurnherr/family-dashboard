@@ -32,8 +32,11 @@ def receive_messages():
     # curl -X GET -H "Content-Type: application/json" 'http://127.0.0.1:8080/v1/receive/<number>'
     headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
     response = requests.get(SIGNAL_API_URL + '/v1/receive/' + SIGNAL_PHONE_NUMBER, headers=headers)
-    json_data = response.json() if response and response.status_code == 200 else None
-    return json_data
+    if (response and response.status_code == 200):
+        return response.json()
+    else:
+        print('Got response code', response.status_code, ':', response.json())
+        return None
 
 def list_attachments():
     # curl -X GET -H "Content-Type: application/json" 'http://127.0.0.1:8080/v1/attachments'
@@ -99,6 +102,9 @@ def processMessageCommand(command):
             print(dirEntry.name + ' was created at ' + str(dirEntry.stat().st_ctime))
 
         return True
+    
+    elif (m := re.match(r'^status$', command)):
+        print('Responding to "status" command...')
 
     return False 
 
