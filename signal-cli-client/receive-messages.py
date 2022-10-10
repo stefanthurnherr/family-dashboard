@@ -28,6 +28,16 @@ VERSION = '0.22'
 DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
+def about():
+    # curl -X GET -H "Content-Type: application/json" 'http://127.0.0.1:8095/v1/about'
+    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+    response = requests.get(SIGNAL_API_URL + '/v1/about', headers=headers)
+    if (response and response.status_code == 200):
+        return response.json()
+    else:
+        print('Got response code', response.status_code, ':', response.json())
+        return None
+
 def receive_messages():
     # curl -X GET -H "Content-Type: application/json" 'http://127.0.0.1:8080/v1/receive/<number>'
     headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
@@ -105,6 +115,8 @@ def processMessageCommand(command):
     
     elif (m := re.match(r'^status$', command)):
         print('Responding to "status" command...')
+        jsonStatus = about()
+        print(jsonStatus)
 
     return False 
 
@@ -156,7 +168,7 @@ if __name__ == "__main__":
                         messagesFile.write('\n')
                         
                         if (attachments):    
-                            purgeOldAttachmentsIfTooMany()
+                            purgeOldestAttachmentsIfTooMany()
 
 
             messagesFile.write('# done with all messages.\n')
