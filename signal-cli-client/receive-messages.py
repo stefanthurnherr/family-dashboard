@@ -24,7 +24,7 @@ RECEIVED_MESSAGES_LOG_FILE_PATH = '/home/pi/signal-client/received-messages.txt'
 ATTACHMENTS_FOLDER_PATH = '/home/pi/image-provider/fdimages/'
 ATTACHMENTS_KEEP_MAX_COUNT = 20
 
-VERSION = '0.24'
+VERSION = '0.25'
 
 DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
@@ -39,6 +39,7 @@ def about():
         print('Got response code', response.status_code, ':', response.json())
         return None
 
+
 def receive_messages():
     # curl -X GET -H "Content-Type: application/json" 'http://127.0.0.1:8080/v1/receive/<number>'
     headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
@@ -48,6 +49,7 @@ def receive_messages():
     else:
         print('Got response code', response.status_code, ':', response.json())
         return None
+
 
 def list_attachments():
     # curl -X GET -H "Content-Type: application/json" 'http://127.0.0.1:8080/v1/attachments'
@@ -85,7 +87,7 @@ def sendMessage(recipientNumber, message):
     headers = {'Content-type': 'application/json'}
     payload = {'message': message, 'number': SIGNAL_PHONE_NUMBER, 'recipients': [recipientNumber]}
     response = requests.post(SIGNAL_API_URL + '/v2/send', json=payload, headers=headers)
-    if (response and response.status_code == 200):
+    if (response and response.status_code == 201):
         return response.json()
     else:
         print('Got response code', response.status_code, ':', response.json())
@@ -114,7 +116,6 @@ def purgeOldestAttachmentsIfTooMany():
 
 
 def processMessageCommand(command, sourceNumber):
-    print('Trying to regex-match command: ' + command + '...')
     if (m := re.match('^keep ([0-9]*)$', command)):
 
         keepCount = int(m.group(1))
@@ -139,6 +140,8 @@ def processMessageCommand(command, sourceNumber):
         
         statusMessage += '  timestamp: ' + datetime.now().strftime(DATETIME_FORMAT) + '\n'
         
+        statusMessage += '  OS platform: ' + platform.platform() + '\n'
+        
         statusMessage += '  python version: ' + platform.python_version()+ '\n'
 
         statusMessage += '  receive-messages version: ' + VERSION + '\n'
@@ -150,6 +153,7 @@ def processMessageCommand(command, sourceNumber):
         sendOk = sendMessage(sourceNumber, statusMessage)
         return sendOk
 
+    print('Unknown command "' + command + '", ignoring.')
     return False 
 
 
@@ -174,7 +178,10 @@ if __name__ == "__main__":
                     if ('typingMessage' in message['envelope']):
                         # "Typing message" state changed - ignore these messages 
                         continue
-
+                    
+                    if ('receiptMessage' in message['envelope']):
+                        # 'Read receipt' message received - ignore these messages
+                        continue
 
                     senderName = message['envelope']['sourceName']
                     sourceNumber = message['envelope']['sourceNumber']
