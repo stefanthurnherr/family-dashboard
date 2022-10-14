@@ -10,6 +10,7 @@ import traceback
 import os
 import glob
 import platform
+import subprocess
 
 from datetime import datetime,timedelta
 
@@ -24,7 +25,7 @@ RECEIVED_MESSAGES_LOG_FILE_PATH = '/home/pi/signal-client/received-messages.txt'
 ATTACHMENTS_FOLDER_PATH = '/home/pi/image-provider/fdimages/'
 ATTACHMENTS_KEEP_MAX_COUNT = 20
 
-VERSION = '0.25'
+VERSION = '0.26'
 
 DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
@@ -44,6 +45,14 @@ def get_uptime_seconds():
     with open('/proc/uptime', 'r') as f:
         uptime_seconds = float(f.readline().split()[0])
     return uptime_seconds
+
+
+def get_docker_version():
+    result = subprocess.run(['docker', '--version'], capture_output=True, encoding='UTF-8')
+    # Example stdout: Docker version 20.10.19, build d85ef84
+    
+    stdoutString = result.stdout
+    return stdoutString.strip()[15:]
 
 
 def receive_messages():
@@ -153,6 +162,8 @@ def processMessageCommand(command, sourceNumber):
         statusMessage += '  python version: ' + platform.python_version()+ '\n'
 
         statusMessage += '  receive-messages version: ' + VERSION + '\n'
+        
+        statusMessage += '  Docker version: ' + get_docker_version() + '\n'
         
         aboutSignalCli = about()
         statusMessage += '  signal-cli version: ' + aboutSignalCli['version'] + '\n'
