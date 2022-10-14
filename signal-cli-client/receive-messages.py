@@ -24,7 +24,7 @@ RECEIVED_MESSAGES_LOG_FILE_PATH = '/home/pi/signal-client/received-messages.txt'
 ATTACHMENTS_FOLDER_PATH = '/home/pi/image-provider/fdimages/'
 ATTACHMENTS_KEEP_MAX_COUNT = 20
 
-VERSION = '0.23'
+VERSION = '0.24'
 
 DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
@@ -56,6 +56,7 @@ def list_attachments():
     json_data = response.json() if response and response.status_code == 200 else None
     return json_data
 
+
 def get_attachment_binary(attachmentId, delete = False):
     # curl -X GET -H "Content-Type: application/json" 'http://127.0.0.1:8080/v1/attachments'
     headers = {} # {'Content-type': 'application/json', 'Accept': 'text/plain'}
@@ -68,11 +69,16 @@ def get_attachment_binary(attachmentId, delete = False):
 
     return response.content
 
+
 def delete_attachment(attachmentId):
     # curl -X DELETE -H "Content-Type: application/json" 'http://127.0.0.1:8080/v1/attachments/<id>'
     headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
     response = requests.delete(SIGNAL_API_URL + '/v1/attachments/' + attachmentId, headers=headers)
-    return (response and response.status_code == 200)
+    if (response and response.status_code == 200):
+        return True
+    else:
+        print('Got response code', response.status_code, ':', response.json())
+        return False
 
 
 def sendMessage(recipientNumber, message):
