@@ -11,7 +11,7 @@ import os
 import glob
 import platform
 
-from datetime import datetime
+from datetime import datetime,timedelta
 
 import re
 
@@ -38,6 +38,12 @@ def about():
     else:
         print('Got response code', response.status_code, ':', response.json())
         return None
+
+
+def get_uptime_seconds():
+    with open('/proc/uptime', 'r') as f:
+        uptime_seconds = float(f.readline().split()[0])
+    return uptime_seconds
 
 
 def receive_messages():
@@ -140,7 +146,9 @@ def processMessageCommand(command, sourceNumber):
         
         statusMessage += '  timestamp: ' + datetime.now().strftime(DATETIME_FORMAT) + '\n'
         
-        statusMessage += '  OS platform: ' + platform.platform() + '\n'
+        statusMessage += '  uptime: ' + str(timedelta(seconds=get_uptime_seconds())) + '\n'
+        
+        statusMessage += '  OS: ' + platform.platform() + '\n'
         
         statusMessage += '  python version: ' + platform.python_version()+ '\n'
 
