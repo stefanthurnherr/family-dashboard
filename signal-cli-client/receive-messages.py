@@ -9,6 +9,7 @@ import mimetypes
 import traceback
 import os
 import glob
+import platform
 
 from datetime import datetime
 
@@ -23,7 +24,7 @@ RECEIVED_MESSAGES_LOG_FILE_PATH = '/home/pi/signal-client/received-messages.txt'
 ATTACHMENTS_FOLDER_PATH = '/home/pi/image-provider/fdimages/'
 ATTACHMENTS_KEEP_MAX_COUNT = 20
 
-VERSION = '0.22'
+VERSION = '0.23'
 
 DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
@@ -74,12 +75,24 @@ def delete_attachment(attachmentId):
     return (response and response.status_code == 200)
 
 
+def sendMessage(recipientNumber, message):
+    headers = {'Content-type': 'application/json'}
+    payload = {'message': message, 'number': SIGNAL_PHONE_NUMBER, 'recipients': [recipientNumber]}
+    response = requests.post(SIGNAL_API_URL + '/v2/send', json=payload, headers=headers)
+    if (response and response.status_code == 200):
+        return response.json()
+    else:
+        print('Got response code', response.status_code, ':', response.json())
+        return None
+
+
 def downloadAndSaveAttachment(attachmentId, contentType):
     fileExtension = mimetypes.guess_extension(attachment['contentType'])
     attachmentFilePath = ATTACHMENTS_FOLDER_PATH + attachmentId + fileExtension
     with open(attachmentFilePath, 'wb') as attachmentFile:
         attachmentFile.write(get_attachment_binary(attachmentId, True))
     return attachmentFilePath
+
 
 def purgeOldestAttachmentsIfTooMany():
     # attachments = [f for f in os.listdir(ATTACHMENTS_FOLDER_PATH)]
@@ -94,8 +107,9 @@ def purgeOldestAttachmentsIfTooMany():
             os.remove(attachment)
 
 
-def processMessageCommand(command):
-    if (m := re.match(r'^keep ([0-9]*)$', command)):
+def processMessageCommand(command, sourceNumber):
+    print('Trying to regex-match command: ' + command + '...')
+    if (m := re.match('^keep ([0-9]*)$', command)):
 
         keepCount = int(m.group(1))
         print('keepCount parsed: ' + str(keepCount))
@@ -113,10 +127,22 @@ def processMessageCommand(command):
 
         return True
     
-    elif (m := re.match(r'^status$', command)):
+    elif (m := re.match('^status$', command)):
+        statusMessage = 'Hi, here is my status:\n'
         print('Responding to "status" command...')
-        jsonStatus = about()
-        print(jsonStatus)
+        
+        statusMessage += '  timestamp: ' + datetime.now().strftime(DATETIME_FORMAT) + '\n'
+        
+        statusMessage += '  python version: ' + platform.python_version()+ '\n'
+
+        statusMessage += '  receive-messages version: ' + VERSION + '\n'
+        
+        aboutSignalCli = about()
+        statusMessage += '  signal-cli version: ' + aboutSignalCli['version'] + '\n'
+
+        print(statusMessage)
+        sendOk = sendMessage(sourceNumber, statusMessage)
+        return sendOk
 
     return False 
 
@@ -145,6 +171,7 @@ if __name__ == "__main__":
 
 
                     senderName = message['envelope']['sourceName']
+                    sourceNumber = message['envelope']['sourceNumber']
                     dataMessage = message['envelope']['dataMessage']
                     messageTextRaw = dataMessage['message']
                     messageText = messageTextRaw if messageTextRaw else '(no message)'
@@ -153,7 +180,7 @@ if __name__ == "__main__":
                     messagesFile.write('\n')
 
                     if (messageText.startswith('/')):
-                        commandRecognized = processMessageCommand(messageText[1:])
+                        commandRecognized = processMessageCommand(messageText[1:], sourceNumber)
                         messagesFile.write('  Message was recognized as command? {}'.format(commandRecognized))
                         messagesFile.write('\n')
 
