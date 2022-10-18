@@ -95,7 +95,7 @@ public class DashboardApplication {
 
   private Resource findImageResource(final String id, final List<Resource> resources) {
     for (final Resource resource : resources) {
-      System.out.println("  Checking whether " + resource.getFilename() + " matches id=" + id + "...");
+      //System.out.println("  Checking whether " + resource.getFilename() + " matches id=" + id + "...");
       if (resource.getFilename().equals(id)) {
         return resource;
       }
