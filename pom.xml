@@ -37,6 +37,14 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<!-- EXIF lib https://github.com/drewnoakes/metadata-extractor/ -->
+		  <groupId>com.drewnoakes</groupId>
+		  <artifactId>metadata-extractor</artifactId>
+		  <version>2.18.0</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
