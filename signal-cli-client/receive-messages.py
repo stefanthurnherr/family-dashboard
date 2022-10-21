@@ -72,7 +72,7 @@ class SignalApi(object):
             return None
 
         if (delete):
-            delete_attachment(attachmentId)
+            self.delete_attachment(attachmentId)
 
         return response.content
 
@@ -116,11 +116,11 @@ def get_docker_version():
     return stdoutString.strip()[15:]
 
 
-def downloadAndSaveAttachment(attachmentId, contentType, targetFolderPath):
+def downloadAndSaveAttachment(attachmentId, contentType, targetFolderPath, signalApi):
     fileExtension = mimetypes.guess_extension(attachment['contentType'])
     attachmentFilePath = targetFolderPath + attachmentId + fileExtension
     with open(attachmentFilePath, 'wb') as attachmentFile:
-        attachmentFile.write(get_attachment_binary(attachmentId, True))
+        attachmentFile.write(signalApi.get_attachment_binary(attachmentId, True))
     return attachmentFilePath
 
 
@@ -136,7 +136,7 @@ def purgeOldestAttachmentsIfTooMany(targetFolderPath, maxKeepCount):
             os.remove(attachment)
 
 
-def processMessageCommand(command, sourceNumber, signal_api, targetFolderPath):
+def processMessageCommand(command, sourceNumber, signalApi, targetFolderPath):
     if (m := re.match('^keep ([0-9]*)$', command)):
 
         keepCount = int(m.group(1))
@@ -171,11 +171,11 @@ def processMessageCommand(command, sourceNumber, signal_api, targetFolderPath):
 
         statusMessage += '  Docker version: ' + get_docker_version() + '\n'
 
-        aboutSignalCli = signal_api.about()
+        aboutSignalCli = signalApi.about()
         statusMessage += '  signal-cli version: ' + aboutSignalCli['version'] + '\n'
 
         print(statusMessage)
-        sendOk = signal_api.sendMessage(sourceNumber, statusMessage)
+        sendOk = signalApi.sendMessage(sourceNumber, statusMessage)
         return sendOk
 
     print('Unknown command "' + command + '", ignoring.')
@@ -186,7 +186,7 @@ if __name__ == "__main__":
 
     config = configparser.ConfigParser()
     config.read(CONFIG_FILEPATH)
-    signal_api = SignalApi(config['SignalConfig']['rest_api_url'],
+    signalApi = SignalApi(config['SignalConfig']['rest_api_url'],
                             config['SignalConfig']['my_number'])
 
     now_string = datetime.now().strftime(DATETIME_FORMAT)
@@ -196,12 +196,12 @@ if __name__ == "__main__":
         try:
             messagesFile.write("# running v{} at {}\n".format(VERSION, now_string))
 
-            attachmentList = signal_api.list_attachments()
+            attachmentList = signalApi.list_attachments()
             messagesFile.write("  currently downloaded {} attachments: {}\n".format(len(attachmentList), attachmentList))
 
             targetFolderPath = config['MediaStorage']['images_folder_path']
 
-            messages = signal_api.receive_messages()
+            messages = signalApi.receive_messages()
             if (messages):
                 for message in messages:
                     messagesFile.write(json.dumps(message, indent=4))
@@ -233,14 +233,14 @@ if __name__ == "__main__":
                         for attachment in attachments:
                             attachmentId = attachment['id']
                             attachmentContentType = attachment['contentType']
-                            attachmentFilePath = downloadAndSaveAttachment(attachmentId, attachmentContentType, targetFolderPath)
+                            attachmentFilePath = downloadAndSaveAttachment(attachmentId, attachmentContentType, targetFolderPath, signalApi)
                             messagesFile.write(" Found attachment {} of type {}, saved as {}".format(attachmentId, attachmentContentType, attachmentFilePath))
                             messagesFile.write('\n')
 
                         messagesFile.write('\n')
 
                         if (attachments):
-                            purgeOldestAttachmentsIfTooMany(targetFolderPath, config['MediaStorage']['images_keep_max_count'])
+                            purgeOldestAttachmentsIfTooMany(targetFolderPath, config.getint('MediaStorage', 'images_keep_max_count'))
 
 
             messagesFile.write('# done with all messages.\n')
