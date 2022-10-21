@@ -176,7 +176,7 @@ def processMessageCommand(command, sourceNumber, signalApi, targetFolderPath):
 
         print(statusMessage)
         sendOk = signalApi.sendMessage(sourceNumber, statusMessage)
-        return sendOk
+        return bool(sendOk)
 
     print('Unknown command "' + command + '", ignoring.')
     return False
@@ -225,7 +225,7 @@ if __name__ == "__main__":
                     messagesFile.write('\n')
 
                     if (messageText.startswith('/')):
-                        commandRecognized = processMessageCommand(messageText[1:], sourceNumber, targetFolderPath)
+                        commandRecognized = processMessageCommand(messageText[1:], sourceNumber, signalApi, targetFolderPath)
                         messagesFile.write('  Message was recognized as command? {}'.format(commandRecognized))
                         messagesFile.write('\n')
 
