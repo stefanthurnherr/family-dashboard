@@ -12,34 +12,95 @@ import glob
 import platform
 import subprocess
 
+import configparser
+
 from datetime import datetime,timedelta
 
 import re
 
 
-SIGNAL_API_URL = 'http://127.0.0.1:8095'
-SIGNAL_PHONE_NUMBER = '+46987654321'
-
+CONFIG_FILEPATH = '/home/pi/signal-client/my.cfg'
 RECEIVED_MESSAGES_LOG_FILE_PATH = '/home/pi/signal-client/received-messages.txt'
-
-ATTACHMENTS_FOLDER_PATH = '/home/pi/image-provider/fdimages/'
-ATTACHMENTS_KEEP_MAX_COUNT = 20
-
-VERSION = '0.27'
-
+VERSION = '0.28'
 DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
-def about():
-    # curl -X GET -H "Content-Type: application/json" 'http://127.0.0.1:8095/v1/about'
-    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-    response = requests.get(SIGNAL_API_URL + '/v1/about', headers=headers)
-    if (response and response.status_code == 200):
-        return response.json()
-    else:
-        print('Got response code', response.status_code, ':', response.json())
-        return None
+class SignalApi(object):
 
+    def __init__(self, url, number):
+        self.url = url
+        self.myNumber = number
+
+
+    def about(self):
+        # curl -X GET -H "Content-Type: application/json" 'http://127.0.0.1:8095/v1/about'
+        headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+        response = requests.get(self.url + '/v1/about', headers=headers)
+        if (response and response.status_code == 200):
+            return response.json()
+        else:
+            print('Got response code', response.status_code, ':', response.json())
+            return None
+
+
+    def receive_messages(self):
+        # curl -X GET -H "Content-Type: application/json" 'http://127.0.0.1:8080/v1/receive/<number>'
+        headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+        response = requests.get(self.url + '/v1/receive/' + self.myNumber, headers=headers)
+        if (response and response.status_code == 200):
+            return response.json()
+        else:
+            print('Got response code', response.status_code, ':', response.json())
+            return None
+
+
+    def list_attachments(self):
+        # curl -X GET -H "Content-Type: application/json" 'http://127.0.0.1:8080/v1/attachments'
+        headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+        response = requests.get(self.url + '/v1/attachments/', headers=headers)
+        if (response and response.status_code == 200):
+            return response.json()
+        else:
+            print('Got response code', response.status_code, ':', response.json())
+            return None
+
+
+    def get_attachment_binary(self, attachmentId, delete = False):
+        headers = {} # {'Content-type': 'application/json', 'Accept': 'text/plain'}
+        response = requests.get(self.url + '/v1/attachments/' + attachmentId, headers=headers)
+        if ( not response or response.status_code != 200):
+            return None
+
+        if (delete):
+            delete_attachment(attachmentId)
+
+        return response.content
+
+
+    def delete_attachment(self, attachmentId):
+        # curl -X DELETE -H "Content-Type: application/json" 'http://127.0.0.1:8080/v1/attachments/<id>'
+        headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+        response = requests.delete(self.url + '/v1/attachments/' + attachmentId, headers=headers)
+        if (response and response.status_code == 204):
+            return True
+        else:
+            print('Got response code', response.status_code, ':', response.json())
+            return False
+
+
+    def sendMessage(self, recipientNumber, message):
+        headers = {'Content-type': 'application/json'}
+        payload = {'message': message, 'number': self.myNumber, 'recipients': [recipientNumber]}
+        response = requests.post(self.url + '/v2/send', json=payload, headers=headers)
+        if (response and response.status_code == 201):
+            return response.json()
+        else:
+            print('Got response code', response.status_code, ':', response.json())
+            return None
+
+#
+# ################# End of class SignalApi
+#
 
 def get_uptime_seconds():
     with open('/proc/uptime', 'r') as f:
@@ -50,80 +111,23 @@ def get_uptime_seconds():
 def get_docker_version():
     result = subprocess.run(['docker', '--version'], capture_output=True, encoding='UTF-8')
     # Example stdout: Docker version 20.10.19, build d85ef84
-    
+
     stdoutString = result.stdout
     return stdoutString.strip()[15:]
 
 
-def receive_messages():
-    # curl -X GET -H "Content-Type: application/json" 'http://127.0.0.1:8080/v1/receive/<number>'
-    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-    response = requests.get(SIGNAL_API_URL + '/v1/receive/' + SIGNAL_PHONE_NUMBER, headers=headers)
-    if (response and response.status_code == 200):
-        return response.json()
-    else:
-        print('Got response code', response.status_code, ':', response.json())
-        return None
-
-
-def list_attachments():
-    # curl -X GET -H "Content-Type: application/json" 'http://127.0.0.1:8080/v1/attachments'
-    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-    response = requests.get(SIGNAL_API_URL + '/v1/attachments/', headers=headers)
-    if (response and response.status_code == 200):
-        return response.json()
-    else:
-        print('Got response code', response.status_code, ':', response.json())
-        return None
-
-
-def get_attachment_binary(attachmentId, delete = False):
-    headers = {} # {'Content-type': 'application/json', 'Accept': 'text/plain'}
-    response = requests.get(SIGNAL_API_URL + '/v1/attachments/' + attachmentId, headers=headers)
-    if ( not response or response.status_code != 200):
-        return None
-
-    if (delete):
-        delete_attachment(attachmentId)
-
-    return response.content
-
-
-def delete_attachment(attachmentId):
-    # curl -X DELETE -H "Content-Type: application/json" 'http://127.0.0.1:8080/v1/attachments/<id>'
-    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-    response = requests.delete(SIGNAL_API_URL + '/v1/attachments/' + attachmentId, headers=headers)
-    if (response and response.status_code == 204):
-        return True
-    else:
-        print('Got response code', response.status_code, ':', response.json())
-        return False
-
-
-def sendMessage(recipientNumber, message):
-    headers = {'Content-type': 'application/json'}
-    payload = {'message': message, 'number': SIGNAL_PHONE_NUMBER, 'recipients': [recipientNumber]}
-    response = requests.post(SIGNAL_API_URL + '/v2/send', json=payload, headers=headers)
-    if (response and response.status_code == 201):
-        return response.json()
-    else:
-        print('Got response code', response.status_code, ':', response.json())
-        return None
-
-
-def downloadAndSaveAttachment(attachmentId, contentType):
+def downloadAndSaveAttachment(attachmentId, contentType, targetFolderPath):
     fileExtension = mimetypes.guess_extension(attachment['contentType'])
-    attachmentFilePath = ATTACHMENTS_FOLDER_PATH + attachmentId + fileExtension
+    attachmentFilePath = targetFolderPath + attachmentId + fileExtension
     with open(attachmentFilePath, 'wb') as attachmentFile:
         attachmentFile.write(get_attachment_binary(attachmentId, True))
     return attachmentFilePath
 
 
-def purgeOldestAttachmentsIfTooMany():
-    # attachments = [f for f in os.listdir(ATTACHMENTS_FOLDER_PATH)]
-    attachments = glob.glob(ATTACHMENTS_FOLDER_PATH + '*.jpg', recursive=False)
-    tooManyCount = len(attachments) - ATTACHMENTS_KEEP_MAX_COUNT
-    
+def purgeOldestAttachmentsIfTooMany(targetFolderPath, maxKeepCount):
+    attachments = glob.glob(targetFolderPath + '*.jpg', recursive=False)
+    tooManyCount = len(attachments) - maxKeepCount
+
     if (tooManyCount > 0):
         print('Too many attachments, max count exceeded by', tooManyCount)
         attachments.sort(key=os.path.getmtime)
@@ -132,14 +136,14 @@ def purgeOldestAttachmentsIfTooMany():
             os.remove(attachment)
 
 
-def processMessageCommand(command, sourceNumber):
+def processMessageCommand(command, sourceNumber, signal_api, targetFolderPath):
     if (m := re.match('^keep ([0-9]*)$', command)):
 
         keepCount = int(m.group(1))
         print('keepCount parsed: ' + str(keepCount))
 
         dirEntryList = []
-        for dirEntry in os.scandir(ATTACHMENTS_FOLDER_PATH):
+        for dirEntry in os.scandir(targetFolderPath):
             if (dirEntry.is_file()):
                 dirEntryList.append(dirEntry)
 
@@ -150,35 +154,40 @@ def processMessageCommand(command, sourceNumber):
             print(dirEntry.name + ' was created at ' + str(dirEntry.stat().st_ctime))
 
         return True
-    
+
     elif (m := re.match('^status$', command)):
         statusMessage = 'Hi, here is my status:\n'
         print('Responding to "status" command...')
-        
+
         statusMessage += '  timestamp: ' + datetime.now().strftime(DATETIME_FORMAT) + '\n'
-        
+
         statusMessage += '  uptime: ' + str(timedelta(seconds=get_uptime_seconds())) + '\n'
-        
+
         statusMessage += '  OS: ' + platform.platform() + '\n'
-        
+
         statusMessage += '  python version: ' + platform.python_version()+ '\n'
 
         statusMessage += '  receive-messages version: ' + VERSION + '\n'
-        
+
         statusMessage += '  Docker version: ' + get_docker_version() + '\n'
-        
-        aboutSignalCli = about()
+
+        aboutSignalCli = signal_api.about()
         statusMessage += '  signal-cli version: ' + aboutSignalCli['version'] + '\n'
 
         print(statusMessage)
-        sendOk = sendMessage(sourceNumber, statusMessage)
+        sendOk = signal_api.sendMessage(sourceNumber, statusMessage)
         return sendOk
 
     print('Unknown command "' + command + '", ignoring.')
-    return False 
+    return False
 
 
 if __name__ == "__main__":
+
+    config = configparser.ConfigParser()
+    config.read(CONFIG_FILEPATH)
+    signal_api = SignalApi(config['SignalConfig']['rest_api_url'],
+                            config['SignalConfig']['my_number'])
 
     now_string = datetime.now().strftime(DATETIME_FORMAT)
     print("{} Fetching Signal messages...".format(now_string))
@@ -187,19 +196,21 @@ if __name__ == "__main__":
         try:
             messagesFile.write("# running v{} at {}\n".format(VERSION, now_string))
 
-            attachmentList = list_attachments()
+            attachmentList = signal_api.list_attachments()
             messagesFile.write("  currently downloaded {} attachments: {}\n".format(len(attachmentList), attachmentList))
 
-            messages = receive_messages()
+            targetFolderPath = config['MediaStorage']['images_folder_path']
+
+            messages = signal_api.receive_messages()
             if (messages):
                 for message in messages:
                     messagesFile.write(json.dumps(message, indent=4))
                     messagesFile.write('\n')
 
                     if ('typingMessage' in message['envelope']):
-                        # "Typing message" state changed - ignore these messages 
+                        # "Typing message" state changed - ignore these messages
                         continue
-                    
+
                     if ('receiptMessage' in message['envelope']):
                         # 'Read receipt' message received - ignore these messages
                         continue
@@ -214,7 +225,7 @@ if __name__ == "__main__":
                     messagesFile.write('\n')
 
                     if (messageText.startswith('/')):
-                        commandRecognized = processMessageCommand(messageText[1:], sourceNumber)
+                        commandRecognized = processMessageCommand(messageText[1:], sourceNumber, targetFolderPath)
                         messagesFile.write('  Message was recognized as command? {}'.format(commandRecognized))
                         messagesFile.write('\n')
 
@@ -222,14 +233,14 @@ if __name__ == "__main__":
                         for attachment in attachments:
                             attachmentId = attachment['id']
                             attachmentContentType = attachment['contentType']
-                            attachmentFilePath = downloadAndSaveAttachment(attachmentId, attachmentContentType)
+                            attachmentFilePath = downloadAndSaveAttachment(attachmentId, attachmentContentType, targetFolderPath)
                             messagesFile.write(" Found attachment {} of type {}, saved as {}".format(attachmentId, attachmentContentType, attachmentFilePath))
                             messagesFile.write('\n')
-                        
+
                         messagesFile.write('\n')
-                        
-                        if (attachments):    
-                            purgeOldestAttachmentsIfTooMany()
+
+                        if (attachments):
+                            purgeOldestAttachmentsIfTooMany(targetFolderPath, config['MediaStorage']['images_keep_max_count'])
 
 
             messagesFile.write('# done with all messages.\n')
@@ -240,6 +251,3 @@ if __name__ == "__main__":
             messagesFile.write('\n')
 
         print("{} done.".format(datetime.now().strftime(DATETIME_FORMAT)))
-
-
-
