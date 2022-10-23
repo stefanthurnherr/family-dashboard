@@ -60,6 +60,8 @@ public class DashboardSlideshow {
 
     model.addAttribute("imageUrls", imageUrls);
 
+    model.addAttribute("intervalMsecs", 3000);
+
     return "slideshowTemplate";
   }
 
