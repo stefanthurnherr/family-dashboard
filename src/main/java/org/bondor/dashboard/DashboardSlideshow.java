@@ -25,6 +25,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.ui.Model;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.stereotype.Controller;
 
@@ -72,10 +73,12 @@ public class DashboardSlideshow {
     return "slideshowTemplate";
   }
 
-  @GetMapping(value = "/slideshowChecksum")
-  public String slideshowChecksum(final Model model) throws Exception {
+  @GetMapping(value = "/slideshowChecksum",
+              produces = MediaType.APPLICATION_JSON_VALUE)
+  public Object slideshowChecksum(final Model model) throws Exception {
     final List<Resource> resources = new DashboardApplication().allImageResources();
-    return calculateChecksum(resources);
+    final String checksum = calculateChecksum(resources);
+    return Collections.singleton(checksum);
   }
 
   private static String calculateChecksum(List<Resource> resources) throws Exception {
@@ -91,8 +94,7 @@ public class DashboardSlideshow {
       }
     }
 
-    final String hashText = convertToHex(shaDigest.digest());
-    return hashText;
+    return convertToHex(shaDigest.digest());
   }
 
   private static String convertToHex(final byte[] bytes) {
