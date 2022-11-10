@@ -77,6 +77,25 @@ public class DashboardApplication {
 
     final String nowString = DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(LocalDateTime.now());
     System.out.println(nowString + " Serving image " + imageResource + " for id=" + id);
+    return asResponse(imageResource);
+  }
+
+  @RequestMapping(value = "/imageByIndex/{index:[0-9]*}", method = RequestMethod.GET)
+  public ResponseEntity<byte[]> image(HttpServletRequest request,
+                                      @PathVariable("index") int index) throws Exception {
+    final List<Resource> allResources = allImageResources();
+    final int resourceIndex = index % allResources.size();
+    final Resource imageResource = allResources.get(resourceIndex);
+    if (imageResource == null) {
+      return ResponseEntity.notFound().build();
+    }
+
+    final String nowString = DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(LocalDateTime.now());
+    System.out.println(nowString + " Serving image " + imageResource + " for index=" + index);
+    return asResponse(imageResource);
+  }
+
+  private ResponseEntity<byte[]> asResponse(final Resource imageResource) throws Exception {
     InputStream inputStream = null;
     try {
       inputStream = imageResource.getInputStream();
