@@ -26,7 +26,7 @@ How to Install the signal-cli wrapper (docker container)
 =======
 * Install docker-compose (based on [these instructions](https://www.upswift.io/post/install-docker-compose-on-raspberry-pi)):
     * ```sudo apt-get install libffi-dev libssl-dev```
-    * ```sudo apt install python3-dev```
+    * ```sudo apt-get install python3-dev```
     * ```sudo apt-get install -y python3 python3-pip```
     * ```sudo pip3 install docker-compose```
 * Start the docker container for the "signal-cli-rest-api": ```docker-compose -f docker-compose.yml up -d``` (uses the excellent Signal CLI REST API from [this github repo](https://github.com/bbernhard/signal-cli-rest-api/))
