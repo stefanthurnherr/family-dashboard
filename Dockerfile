@@ -1,4 +1,4 @@
-FROM arm32v7/adoptopenjdk:16-jre-hotspot
+FROM arm32v7/eclipse-temurin:19
 #
 RUN addgroup --system spring && adduser --system -ingroup spring spring
 #
