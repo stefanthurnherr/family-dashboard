@@ -13,7 +13,7 @@ start() {
     docker-compose -f /home/pi/signal-client/docker-compose.yml up -d
 
     # requires the docker image built and tagged as 'bondor/family-dashboard'
-    docker container run -d --volume /home/pi/image-provider/fdimages:/opt/family-dashboard-images -p 8080:8080 bondor/family-dashboard
+    docker container run -d --volume /home/pi/image-provider/fdimages:/opt/family-dashboard-images -p 8080:8080 -p 8443:8443 bondor/family-dashboard
 }
 
 stop() {
