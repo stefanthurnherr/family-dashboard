@@ -81,7 +81,7 @@ public class DashboardApplication {
   }
 
   @RequestMapping(value = "/imageByIndex/{index:[0-9]*}", method = RequestMethod.GET)
-  public ResponseEntity<byte[]> image(HttpServletRequest request,
+  public ResponseEntity<byte[]> imageByIndex(HttpServletRequest request,
                                       @PathVariable("index") int index) throws Exception {
     final List<Resource> allResources = allImageResources();
     final int resourceIndex = index % allResources.size();
