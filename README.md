@@ -19,7 +19,7 @@ How To Set Up an RPi in Chromium kiosk mode
     * ```./mvnw package``` if you use maven and the maven-wrapper to build
     * Transfer both the WAR file and the Dockerfile to your RPi
 * ```docker build -t bondor/family-dashboard .``` to build the docker image and tag it
-* ```docker container run --volume /home/pi/image-provider/fdimages:/opt/family-dashboard-images -p 8080:8080 bondor/family-dashboard```
+* ```docker container run --volume /home/pi/image-provider/fdimages:/opt/family-dashboard-images -p 8080:8080 -p 8443:8443 bondor/family-dashboard```
 * Set the URL for Chromium by creating the file ```/home/pi/chilipie_url.txt``` with url ```http://localhost:8080/slideshow``` as its first and only line.
 
 How to Install the signal-cli wrapper (docker container)
