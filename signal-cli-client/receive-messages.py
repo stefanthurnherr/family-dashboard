@@ -5,7 +5,6 @@ import requests
 import json
 
 import base64
-import mimetypes
 import traceback
 import os
 import glob
@@ -117,8 +116,7 @@ def get_docker_version():
 
 
 def downloadAndSaveAttachment(attachmentId, contentType, targetFolderPath, signalApi):
-    fileExtension = mimetypes.guess_extension(attachment['contentType'])
-    attachmentFilePath = targetFolderPath + attachmentId + fileExtension
+    attachmentFilePath = targetFolderPath + attachmentId
     with open(attachmentFilePath, 'wb') as attachmentFile:
         attachmentFile.write(signalApi.get_attachment_binary(attachmentId, True))
     return attachmentFilePath
