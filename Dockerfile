@@ -1,6 +1,6 @@
 #Should probably use jlink to create a JRE image (instead of JDK):
 # https://github.com/docker-library/docs/blob/master/eclipse-temurin/README.md#creating-a-jre-using-jlink
-FROM arm32v7/eclipse-temurin:19
+FROM arm64v8/eclipse-temurin:21-jre
 #
 RUN addgroup --system spring && adduser --system -ingroup spring spring
 #
