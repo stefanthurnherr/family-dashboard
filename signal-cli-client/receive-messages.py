@@ -18,8 +18,9 @@ from datetime import datetime,timedelta
 import re
 
 
-CONFIG_FILEPATH = '/home/pi/signal-client/my.cfg'
-RECEIVED_MESSAGES_LOG_FILE_PATH = '/home/pi/signal-client/received-messages.txt'
+BASE_FILEPATH = '/home/pi/signal-client/'
+CONFIG_FILEPATH = BASE_FILEPATH + 'my.cfg'
+RECEIVED_MESSAGES_LOG_FILE_PATH = BASE_FILE_PATH + 'received-messages.txt'
 VERSION = '0.28'
 DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
