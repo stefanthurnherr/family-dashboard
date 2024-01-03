@@ -1,12 +1,12 @@
 package org.bondor.dashboard;
 
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 
 
 @Configuration
-public class MySpringConfiguration extends WebMvcConfigurerAdapter {
+public class MySpringConfiguration implements WebMvcConfigurer {
 
   @Override
   public void addResourceHandlers(final ResourceHandlerRegistry registry) {

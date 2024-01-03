@@ -66,7 +66,7 @@ public class DashboardSlideshow {
 
     model.addAttribute("imageUrls", imageUrls);
 
-    model.addAttribute("intervalMsecs", 3000);
+    model.addAttribute("intervalMsecs", 30000);
 
     model.addAttribute("slideshowChecksum", calculateChecksum(resources));
 
