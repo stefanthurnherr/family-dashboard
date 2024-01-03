@@ -11,6 +11,7 @@ How To Set Up an RPi in Chromium kiosk mode
   uname -m # should print aarch64
   dpkg --print-architecture # should print arm64
   ```
+* Disable bluetooth (if not needed) by adding the line `dtoverlay=disable-bt` to /boot/config.txt
 * If you use the default pi user and absolutely don't want to change the default password, remove the warning:
   ```shell
   sudo apt purge libpam-chksshpwd pprompt
@@ -32,6 +33,10 @@ How To Set Up an RPi in Chromium kiosk mode
 * ```docker build -t bondor/family-dashboard .``` to build the docker image and tag it
 * ```docker container run --volume /home/pi/image-provider/fdimages:/opt/family-dashboard-images -p 8080:8080 -p 8443:8443 bondor/family-dashboard```
 * Set the URL for Chromium by creating the file ```/home/pi/chilipie_url.txt``` with url ```http://localhost:8080/slideshow``` as its first and only line.
+
+How to boot into Chromium kiosk mode
+=======
+* Add this to `.config/wayfire.ini`
 
 How to Install the signal-cli wrapper (docker container)
 =======
