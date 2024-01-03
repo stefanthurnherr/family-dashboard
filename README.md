@@ -1,5 +1,5 @@
 # family-dashboard
-Dashboard for the whole family shown at home
+Software package to build a digital picture frame based on the signal messenger. The original idea was to build a dashboard to incorporate other data (weather, calendar, etc), but so far only the picture frame functionality is implemented.
 
 
 How To Set Up an RPi in Chromium kiosk mode
