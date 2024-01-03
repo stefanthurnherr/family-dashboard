@@ -20,7 +20,7 @@ import re
 
 BASE_FILEPATH = '/home/pi/signal-client/'
 CONFIG_FILEPATH = BASE_FILEPATH + 'my.cfg'
-RECEIVED_MESSAGES_LOG_FILE_PATH = BASE_FILE_PATH + 'received-messages.txt'
+RECEIVED_MESSAGES_LOG_FILE_PATH = BASE_FILEPATH + 'received-messages.txt'
 VERSION = '0.28'
 DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
