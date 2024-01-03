@@ -5,7 +5,11 @@ Dashboard for the whole family shown at home
 How To Set Up an RPi in Chromium kiosk mode
 ======
 * A Raspberry Pi with an sd card, a display, internet connection and power supply
-* Use the excellent [chilipie-kiosk](https://github.com/jareware/chilipie-kiosk/) RPi image to boot directly into full-screen Chrome
+* Raspberry Pi OS (Desktop, bookworm) installed on the sd card
+* If you use the default pi user and absolutely don't want to change the default password, remove the warning:
+  ```shell
+  sudo apt purge libpam-chksshpwd pprompt
+  ```
 * Update to latest software using ```apt-get update/upgrade```
 * Install docker on the RPi:
 ```shell
