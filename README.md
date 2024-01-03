@@ -18,12 +18,14 @@ How To Set Up an RPi in Chromium kiosk mode
 * Update to latest software using ```apt-get update/upgrade```
 * Install docker on the RPi:
 ```shell
-  curl -fsSL https://get.docker.com -o get-docker.sh
-  sh get-docker.sh
+  sudo apt install docker
 ```
-* On the RPi, add the ```pi``` user to the ```docker``` user group: ```sudo usermod -aG docker pi```
+* On the RPi, add the ```pi``` user to the ```docker``` user group:
+  ```shell
+  sudo usermod -aG docker pi
+  ```
 * Reboot the RPi or re-login if you are logged in as user ```pi``` (to get the ```docker``` group applied)
-* Try out some docker commmand to verify installation, e.g. ```docker ps```  
+* Try out some docker commmand to verify installation, e.g. ```docker run hello-world```  
 * Build your webapp and create a Dockerfile (I followed [this tutorial](https://medium.com/swlh/how-to-run-spring-boot-application-on-raspberry-pi-using-docker-d633e15ffff2))
     * ```./mvnw package``` if you use maven and the maven-wrapper to build
     * Transfer both the WAR file and the Dockerfile to your RPi
