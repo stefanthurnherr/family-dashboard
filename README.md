@@ -12,6 +12,7 @@ How To Set Up an RPi in Chromium kiosk mode
   dpkg --print-architecture # should print arm64
   ```
 * Disable bluetooth (if not needed) by adding the line `dtoverlay=disable-bt` to /boot/config.txt
+* Use `sudo nmtui` to configure additional wifi setups
 * If you use the default pi user and absolutely don't want to change the default password, remove the warning:
   ```shell
   sudo apt purge libpam-chksshpwd pprompt
