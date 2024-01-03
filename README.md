@@ -19,7 +19,7 @@ How To Set Up an RPi in Chromium kiosk mode
 * Update to latest software using ```apt-get update/upgrade```
 * Install docker on the RPi:
   ```shell
-  sudo apt install docker
+  sudo apt install docker docker-compose
   ```
 * On the RPi, add the ```pi``` user to the ```docker``` user group:
   ```shell
@@ -42,11 +42,6 @@ How to boot into Chromium kiosk mode
 
 How to Install the signal-cli wrapper (docker container)
 =======
-* Install docker-compose (based on [these instructions](https://www.upswift.io/post/install-docker-compose-on-raspberry-pi)):
-    * ```sudo apt-get install libffi-dev libssl-dev```
-    * ```sudo apt-get install python3-dev```
-    * ```sudo apt-get install -y python3 python3-pip```
-    * ```sudo pip3 install docker-compose```
 * Start the docker container for the "signal-cli-rest-api": ```docker-compose -f docker-compose.yml up -d``` (uses the excellent Signal CLI REST API from [this github repo](https://github.com/bbernhard/signal-cli-rest-api/))
 * Register a phone number (i.e. your home phone number): https://github.com/bbernhard/signal-cli-rest-api/blob/master/doc/EXAMPLES.md
     * I used my home phone number and it took several attempts (incl. captcha) with timeouts/"wrong captcha" before I got the call with the confirmation code. So keep cool and try again :-)
