@@ -7,7 +7,7 @@ How To Set Up an RPi in Chromium kiosk mode
 * A Raspberry Pi with an sd card, a display, internet connection and power supply
 * Raspberry Pi OS (Desktop, bookworm) installed on the sd card
 * This README assumes you are running on a 64-bit RPi. To check this:
-* ```shell
+  ```shell
   uname -m # should print aarch64
   dpkg --print-architecture # should print arm64
   ```
