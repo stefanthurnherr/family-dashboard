@@ -18,9 +18,9 @@ How To Set Up an RPi in Chromium kiosk mode
   ```
 * Update to latest software using ```apt-get update/upgrade```
 * Install docker on the RPi:
-```shell
+  ```shell
   sudo apt install docker
-```
+  ```
 * On the RPi, add the ```pi``` user to the ```docker``` user group:
   ```shell
   sudo usermod -aG docker pi
@@ -36,7 +36,11 @@ How To Set Up an RPi in Chromium kiosk mode
 
 How to boot into Chromium kiosk mode
 =======
-* Add this to `.config/wayfire.ini`
+* The default behaviour of RPi OS Desktop version is to auto-login and boot into Desktop, so the only thing we need to add is to auto-start Chromium in kiosk mode
+* Add this to `.config/wayfire.ini` (the url will be changed later):
+  ```shell
+  chromium = chromium-browser https://time.is/London --kiosk --noerrdialogs --disable-infobars --no-first-run --ozone-platform=wayland --enable-features=OverlayScrollbar --start-maximized
+  ```
 
 How to Install the signal-cli wrapper (docker container)
 =======
