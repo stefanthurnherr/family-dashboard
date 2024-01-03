@@ -17,7 +17,7 @@ How To Set Up an RPi in Chromium kiosk mode
   ```shell
   sudo apt purge libpam-chksshpwd pprompt
   ```
-* Update to latest software using ```apt-get update/upgrade```
+* Update to latest software using ```sudo apt update/upgrade```
 * Install docker on the RPi:
   ```shell
   sudo apt install docker docker-compose
