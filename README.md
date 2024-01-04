@@ -29,6 +29,7 @@ How To Set Up an RPi in Chromium kiosk mode
 * Reboot the RPi or re-login if you are logged in as user ```pi``` (to get the ```docker``` group applied)
 * Try out some docker commmand to verify installation, e.g. ```docker run hello-world```  
 * Build your webapp and create a Dockerfile (I followed [this tutorial](https://medium.com/swlh/how-to-run-spring-boot-application-on-raspberry-pi-using-docker-d633e15ffff2))
+    * Change into folder `slideshow-app`
     * ```./mvnw package``` if you use maven and the maven-wrapper to build
     * Transfer both the WAR file and the Dockerfile to your RPi
 * ```docker build -t bondor/family-dashboard .``` to build the docker image and tag it
