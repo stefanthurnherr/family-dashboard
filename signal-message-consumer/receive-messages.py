@@ -18,7 +18,7 @@ from datetime import datetime,timedelta
 import re
 
 
-BASE_FILEPATH = '/home/pi/signal-client/'
+BASE_FILEPATH = '/home/pi/signal-message-consumer/'
 CONFIG_FILEPATH = BASE_FILEPATH + 'my.cfg'
 RECEIVED_MESSAGES_LOG_FILE_PATH = BASE_FILEPATH + 'received-messages.txt'
 VERSION = '0.29'
