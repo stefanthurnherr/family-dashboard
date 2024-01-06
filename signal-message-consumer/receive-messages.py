@@ -108,6 +108,12 @@ def get_uptime_seconds():
     return uptime_seconds
 
 
+def get_memory_total_str():
+    mem_bytes = os.sysconf('SC_PAGE_SIZE') * os.sysconf('SC_PHYS_PAGES')  # e.g. 4015976448
+    mem_mb = mem_bytes/(1024.**3)  # e.g. 3.74
+    return str(round(mem_mb)) + ' MB'
+
+
 def get_docker_version():
     result = subprocess.run(['docker', '--version'], capture_output=True, encoding='UTF-8')
     # Example stdout: Docker version 20.10.19, build d85ef84
@@ -158,13 +164,15 @@ def processMessageCommand(command, sourceNumber, signalApi, targetFolderPath):
         statusMessage = 'Hi, here is my status:\n'
         print('Responding to "status" command...')
 
-        statusMessage += '  timestamp: ' + datetime.now().strftime(DATETIME_FORMAT) + '\n'
+        statusMessage += '  System time: ' + datetime.now().strftime(DATETIME_FORMAT) + '\n'
 
-        statusMessage += '  uptime: ' + str(timedelta(seconds=get_uptime_seconds())) + '\n'
+        statusMessage += '  Uptime: ' + str(timedelta(seconds=get_uptime_seconds())) + '\n'
 
         statusMessage += '  OS: ' + platform.platform() + '\n'
+        
+        statusMessage += '  Total memory: ' + get_memory_total_str() + '\n'
 
-        statusMessage += '  python version: ' + platform.python_version()+ '\n'
+        statusMessage += '  Python version: ' + platform.python_version()+ '\n'
 
         statusMessage += '  receive-messages version: ' + VERSION + '\n'
 
