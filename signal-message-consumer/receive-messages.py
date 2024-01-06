@@ -109,8 +109,8 @@ def get_uptime_seconds():
 
 
 def get_memory_total_str():
-    mem_bytes = os.sysconf('SC_PAGE_SIZE') * os.sysconf('SC_PHYS_PAGES')  # e.g. 4015976448
-    mem_mb = mem_bytes/(1024.**3)  # e.g. 3.74
+    mem_bytes = os.sysconf('SC_PAGE_SIZE') * os.sysconf('SC_PHYS_PAGES')
+    mem_mb = mem_bytes/(1024.**2)
     return str(round(mem_mb)) + ' MB'
 
 
