@@ -2,7 +2,7 @@
 Software package to build a digital picture frame based on the signal messenger. The original idea was to build a dashboard to incorporate other data (weather, calendar, etc), but so far only the picture frame functionality is implemented.
 
 
-How To Set Up an RPi in Chromium kiosk mode
+How To install OS and required packages
 ======
 * A Raspberry Pi with an sd card, a display, internet connection and power supply
 * Raspberry Pi OS (Desktop, bookworm) installed on the sd card
@@ -28,10 +28,13 @@ How To Set Up an RPi in Chromium kiosk mode
   ```
 * Reboot the RPi or re-login if you are logged in as user ```pi``` (to get the ```docker``` group applied)
 * Try out some docker commmand to verify installation, e.g. ```docker run hello-world```  
-* Build your webapp and create a Dockerfile (I followed [this tutorial](https://medium.com/swlh/how-to-run-spring-boot-application-on-raspberry-pi-using-docker-d633e15ffff2))
-    * Change into folder `slideshow-app`
-    * ```./mvnw package``` if you use maven and the maven-wrapper to build
-    * Transfer both the WAR file and the Dockerfile to your RPi
+
+Build and deploy the slideshow webapp
+=======
+* On any machine (not necessarily the RPi), clone this git repository
+* Change into folder `slideshow-app`
+* ```./mvnw package``` if you use maven and the maven-wrapper to build
+* Transfer both the WAR file and the Dockerfile to your RPi
 * ```docker build -t bondor/family-dashboard .``` to build the docker image and tag it
 * ```docker container run --volume /home/pi/image-provider/fdimages:/opt/family-dashboard-images -p 8080:8080 -p 8443:8443 bondor/family-dashboard```
 
