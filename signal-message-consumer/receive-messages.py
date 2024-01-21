@@ -9,6 +9,7 @@ import traceback
 import os
 import glob
 import platform
+import socket
 import subprocess
 
 import configparser
@@ -122,6 +123,13 @@ def get_docker_version():
     return stdoutString.strip()[15:]
 
 
+def get_my_ip_address():
+    hostname = socket.gethostname()
+    sockets = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    ip_string = (([ip for ip in socket.gethostbyname_ex(hostname)[2] if not ip.startswith("127.")] or [[(s.connect(("8.8.8.8", 53)), s.getsockname()[0], s.close()) for s in [sockets]][0][1]]) + ["(no IP found)"])[0]
+    return ip_string
+
+
 def downloadAndSaveAttachment(attachmentId, contentType, targetFolderPath, signalApi):
     attachmentFilePath = targetFolderPath + attachmentId
     with open(attachmentFilePath, 'wb') as attachmentFile:
@@ -169,6 +177,8 @@ def processMessageCommand(command, sourceNumber, signalApi, targetFolderPath):
         statusMessage += '  Uptime: ' + str(timedelta(seconds=get_uptime_seconds())) + '\n'
 
         statusMessage += '  OS: ' + platform.platform() + '\n'
+
+        statusMessage += '  IP address: ' + get_my_ip_address() + '\n'
         
         statusMessage += '  Total memory: ' + get_memory_total_str() + '\n'
 
