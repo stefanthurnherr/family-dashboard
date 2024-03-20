@@ -48,6 +48,7 @@ How to boot into Chromium kiosk mode
 How to Install the signal-cli wrapper (docker container)
 =======
 * Copy `signal-cli-webserver` from this git repository to /home/pi/ and change directory into it
+* If an older docker image for signal-cli-rest-api is around and you want to pull the latest released version: Run ```docker-compose pull```
 * Start the docker container for the "signal-cli-rest-api": ```docker-compose -f docker-compose.yml up -d``` (uses the excellent Signal CLI REST API from [this github repo](https://github.com/bbernhard/signal-cli-rest-api/))
 * Register a phone number (i.e. your home phone number): https://github.com/bbernhard/signal-cli-rest-api/blob/master/doc/EXAMPLES.md
     * I used my home phone number and it took several attempts (incl. captcha) with timeouts/"wrong captcha" before I got the call with the confirmation code. So keep cool and try again :-)
