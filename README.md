@@ -11,7 +11,7 @@ How To install OS and required packages
   uname -m # should print aarch64
   dpkg --print-architecture # should print arm64
   ```
-* Disable bluetooth (if not needed) by adding the line `dtoverlay=disable-bt` to /boot/config.txt
+* Disable bluetooth (if not needed) by adding the line `dtoverlay=disable-bt` to /boot/firmware/config.txt
 * Use `sudo nmtui` to configure additional wifi setups
 * If you use the default pi user and absolutely don't want to change the default password, remove the warning:
   ```shell
