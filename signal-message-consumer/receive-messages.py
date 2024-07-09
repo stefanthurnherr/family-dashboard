@@ -214,8 +214,11 @@ if __name__ == "__main__":
             messagesFile.write("# running v{} at {}\n".format(VERSION, now_string))
 
             attachmentList = signalApi.list_attachments()
-            messagesFile.write("  currently downloaded {} attachments: {}\n".format(len(attachmentList), attachmentList))
-
+            if attachmentList is None:
+                messagesFile.write("  currently no downloadable attachments are available.\n")
+            else:
+                messagesFile.write("  currently downloaded {} attachments: {}\n".format(len(attachmentList), attachmentList))
+            
             targetFolderPath = config['MediaStorage']['images_folder_path']
 
             messages = signalApi.receive_messages()
