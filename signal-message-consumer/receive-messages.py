@@ -40,7 +40,7 @@ class SignalApi(object):
         if (response and response.status_code == 200):
             return response.json()
         else:
-            print('Got response code', response.status_code, ':', response.json())
+            print('Got response code', response.status_code, ':', response.text)
             return None
 
 
@@ -51,7 +51,7 @@ class SignalApi(object):
         if (response and response.status_code == 200):
             return response.json()
         else:
-            print('Got response code', response.status_code, ':', response.json())
+            print('Got response code', response.status_code, ':', response.text)
             return None
 
 
@@ -62,7 +62,7 @@ class SignalApi(object):
         if (response and response.status_code == 200):
             return response.json()
         else:
-            print('Got response code', response.status_code, ':', response.json())
+            print('Got response code', response.status_code, ':', response.text)
             return None
 
 
@@ -85,7 +85,7 @@ class SignalApi(object):
         if (response and response.status_code == 204):
             return True
         else:
-            print('Got response code', response.status_code, ':', response.json())
+            print('Got response code', response.status_code, ':', response.text)
             return False
 
 
@@ -96,7 +96,7 @@ class SignalApi(object):
         if (response and response.status_code == 201):
             return response.json()
         else:
-            print('Got response code', response.status_code, ':', response.json())
+            print('Got response code', response.status_code, ':', response.text)
             return None
 
 #
