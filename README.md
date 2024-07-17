@@ -51,9 +51,11 @@ How to Install the signal-cli wrapper (docker container)
 * If an older docker image for signal-cli-rest-api is around and you want to pull the latest released version: Run ```docker-compose pull```
 * Start the docker container for the "signal-cli-rest-api": ```docker-compose -f docker-compose.yml up -d``` (uses the excellent Signal CLI REST API from [this github repo](https://github.com/bbernhard/signal-cli-rest-api/))
 * Register a phone number (i.e. your home phone number): https://github.com/bbernhard/signal-cli-rest-api/blob/master/doc/EXAMPLES.md
+    * The order of the API calls to execute seems to be as proposed here: https://github.com/bbernhard/signal-cli-rest-api/issues/441#issuecomment-1987086487
+    * The captcha value supplied in the json payload can (must?) include the ```signalcaptcha://``` prefix.
     * I used my home phone number and it took several attempts (incl. captcha) with timeouts/"wrong captcha" before I got the call with the confirmation code. So keep cool and try again :-)
     * Use --data-binary "@data.txt" to specify request body data from textfile ./data.txt
-* Change the phone number in receive-messages.py (constant defined at the top)
+* Change the phone number in signal-message-consumer/my.cfg
 
 How to auto-start the docker containers above when the RPi (re-)boots:
 =======
