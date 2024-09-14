@@ -40,8 +40,9 @@ Build and deploy the slideshow webapp
 
 How to boot into Chromium kiosk mode
 =======
-* The default behaviour of RPi OS Desktop version is to auto-login and boot into Desktop, so the only thing we need to add is to auto-start Chromium in kiosk mode. To do this, add this line to `.config/wayfire.ini`:
+* The default behaviour of RPi OS Desktop version is to auto-login and boot into Desktop, so the only thing we need to add is to auto-start Chromium in kiosk mode. To do this, add this section/line to `.config/wayfire.ini`:
   ```shell
+  [autostart]
   chromium = chromium-browser http://localhost:8080/slideshow --kiosk --noerrdialogs --disable-infobars --no-first-run --ozone-platform=wayland --enable-features=OverlayScrollbar --start-maximized
   ```
 
