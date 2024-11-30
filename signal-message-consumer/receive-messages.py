@@ -148,8 +148,7 @@ def purgeOldestAttachmentsIfTooMany(targetFolderPath, maxKeepCount):
             print('  Deleting', attachment)
             os.remove(attachment)
 
-
-def processMessageCommand(command, sourceNumber, signalApi, targetFolderPath):
+def processMessageCommand(command, replyTo, signalApi, targetFolderPath):
     if (m := re.match('^keep ([0-9]*)$', command)):
 
         keepCount = int(m.group(1))
@@ -192,7 +191,7 @@ def processMessageCommand(command, sourceNumber, signalApi, targetFolderPath):
         statusMessage += '  signal-cli version: ' + aboutSignalCli['version'] + '\n'
 
         print(statusMessage)
-        sendOk = signalApi.sendMessage(sourceNumber, statusMessage)
+        sendOk = signalApi.sendMessage(replyTo, statusMessage)
         return bool(sendOk)
 
     print('Unknown command "' + command + '", ignoring.')
@@ -237,6 +236,8 @@ if __name__ == "__main__":
 
                     senderName = message['envelope']['sourceName']
                     sourceNumber = message['envelope']['sourceNumber']
+                    sourceUuid = message['envelope']['sourceUuid']
+                    replyTo = sourceNumber if sourceNumber else sourceUuid
                     dataMessage = message['envelope']['dataMessage']
                     messageTextRaw = dataMessage['message']
                     messageText = messageTextRaw if messageTextRaw else '(no message)'
@@ -245,7 +246,7 @@ if __name__ == "__main__":
                     messagesFile.write('\n')
 
                     if (messageText.startswith('/')):
-                        commandRecognized = processMessageCommand(messageText[1:], sourceNumber, signalApi, targetFolderPath)
+                        commandRecognized = processMessageCommand(messageText[1:], replyTo, signalApi, targetFolderPath)
                         messagesFile.write('  Message was recognized as command? {}'.format(commandRecognized))
                         messagesFile.write('\n')
 
