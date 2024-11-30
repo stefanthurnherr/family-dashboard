@@ -52,8 +52,8 @@ How to Install the signal-cli wrapper (docker container)
 * If an older docker image for signal-cli-rest-api is around and you want to pull the latest released version: Run ```docker-compose pull```
 * Start the docker container for the "signal-cli-rest-api": ```docker-compose -f docker-compose.yml up -d``` (uses the excellent Signal CLI REST API from [this github repo](https://github.com/bbernhard/signal-cli-rest-api/))
 * Register a phone number (i.e. your home phone number): https://github.com/bbernhard/signal-cli-rest-api/blob/master/doc/EXAMPLES.md
-    * The order of the API calls to execute seems to be as proposed here: https://github.com/bbernhard/signal-cli-rest-api/issues/441#issuecomment-1987086487
-    * The captcha value supplied in the json payload can (must?) include the ```signalcaptcha://``` prefix.
+    * The order of the API calls to execute when requiring voice verification (not SMS) is as proposed here: https://github.com/bbernhard/signal-cli-rest-api/issues/441#issuecomment-2350792595 (worked for me 2024-11-30)
+    * The captcha value supplied in the json payload must include the ```signalcaptcha://``` prefix.
     * When using copy&paste to do the API calls, make sure to get the single/double quotes right. Text editors sometimes like to convert an ascii simple/double quote to a *curly* simple/double quote, which will give ```Couldn't process request - invalid request.``` errors.
     * I used my home phone number and it took several attempts (incl. captcha) with timeouts/"wrong captcha" before I got the call with the confirmation code. So keep cool and try again :-)
     * Use --data-binary "@data.txt" to specify request body data from textfile ./data.txt
