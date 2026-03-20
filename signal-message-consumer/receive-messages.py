@@ -22,7 +22,7 @@ import re
 BASE_FILEPATH = '/home/pi/signal-message-consumer/'
 CONFIG_FILEPATH = BASE_FILEPATH + 'my.cfg'
 RECEIVED_MESSAGES_LOG_FILE_PATH = BASE_FILEPATH + 'received-messages.txt'
-VERSION = '0.32'
+VERSION = '0.33'
 DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
@@ -188,7 +188,7 @@ def processMessageCommand(command, replyTo, signalApi, targetFolderPath):
         statusMessage += '  Docker version: ' + get_docker_version() + '\n'
 
         aboutSignalCli = signalApi.about()
-        statusMessage += '  signal-cli version: ' + aboutSignalCli['version'] + '\n'
+        statusMessage += '  signal-cli-rest-api version: ' + aboutSignalCli['version'] + '\n'
 
         print(statusMessage)
         sendOk = signalApi.sendMessage(replyTo, statusMessage)
